@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title id="title">Hockey Pool</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="icon" type="image/icon" href="images/icon.png" id="Icon" />
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+        integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+</head>
+
+<body>
+    <main>
+        <img src="assets/background.jpg" id="background_image">
+        <h1 class="title">Hockey Pool</h1>
+        <div class="button_holder" id="main_button">
+            <button class="btn-1" id="start_game" onclick="StartGame()">New Game</button>
+            <button class="btn-1" id="load_game" onclick="LoadGame()">Load Game</button>
+        </div>
+        <div class="hidden" id="create_game_menu">
+            <table>
+                <td>
+                    <div id="players_table">
+                        <input type="text" class="player_name_list" maxlength="12" size="12" placeholder="Player 1"
+                            id="player_1"></input>
+                    </div>
+                </td>
+                <td>
+                    <div id="button_table">
+                        <button type="button" id="btnAddPlayer">Add player</button>
+                        <button type="button" id="btnDelPlayer">Delete Player</button>
+                        <input type="text" maxLength="15" placeholder="Pick game ID" id="game_id_create">
+                        <h3 class="error_message">Error</h3>
+                    </div>
+                </td>
+            </table>
+            <div class="button_holder">
+                <button id="create">Create Game</button>
+                <button class="go_back" onclick="BackFromCreate()">Go Back</button>
+            </div>
+        </div>
+
+        <div class="hidden" id="load_game_menu">
+            <input id="game_id_login" type="text" placeholder="Game ID" maxLength="15"></input>
+            <h3 class="error_message"></h3>
+            <div class="button_holder">
+                <button id="load">Load Game</button>
+                <button class="go_back" onclick="BackFromLoad()">Go Back</button>
+            </div>
+        </div>
+    </main>
+    <script type="text/javascript">
+
+        var Players = ["Player_1"];
+        var playerstable;
+
+        function StartGame() {
+            $('#create_game_menu').delay(200).fadeIn(200);
+            $("#main_button").fadeOut(200);
+            $('.error_message').text('')
+        }
+
+        function LoadGame() {
+            $('#load_game_menu').delay(200).fadeIn(200);
+            $("#main_button").fadeOut(200);
+            $('.error_message').text('')
+        }
+
+        function BackFromLoad() {
+            $('#load_game_menu').fadeOut(200);
+            $("#main_button").delay(200).fadeIn(200);
+        }
+
+        function BackFromCreate() {
+            $('#create_game_menu').fadeOut(200);
+            $("#main_button").delay(200).fadeIn(200);
+        }
+
+        var player_amount = 1
+        playerstable = $('#players_table'), player_amount = 2;
+
+        $('#btnAddPlayer').click(function () {
+            if (player_amount > 15) {
+                $('.error_message').text('There is a max of 15 players').css("color", "red")
+            } else {
+                $('.error_message').text('')
+                playerstable.each(function () {
+                    var element = $(this);
+                    Players.push("Player_" + player_amount)
+                    element.append('<input type="text" class="player_name_list" maxlength="12" size="12" placeholder="Player ' + player_amount + '" id="player_' + player_amount + '"></input>');
+                });
+                player_amount += 1;
+            }
+        });
+
+        $('#btnDelPlayer').click(function () {
+            if ((player_amount - 1) == 1) {
+                $('.error_message').text('You need at least 1 player!').css("color", "red")
+            } else {
+                $('.error_message').text('')
+                playerstable.each(function () {
+                    Players.splice("Player_" + player_amount)
+                    $("#player_" + (player_amount - 1)).remove();
+                });
+                player_amount -= 1;
+            }
+        });
+
+        $("#create").click(function () {
+            var PlayerList = [];
+
+            if ($("#game_id_create").val().length > 6) {
+                $.ajax({
+                    type: "POST",
+                    url: "index.php",
+                    cache: false,
+                    data: { "status": "create_clicked", "game_request": $("#game_id_create").val() },
+                    success: function (result) {
+                        if (result == "true") {
+                            $('.error_message').text('Creating game...').css("color", "green")
+                            for (i = 0; i < player_amount; i++) {
+                                if ($("#player_" + i).val() == "") {
+                                    $("#player_" + i).val("Player " + i);
+                                }
+                                // else if ($("#player_" + i).val().length == 1) {
+                                //     $("#player_" + i).val("Player " + i);
+                                // }
+                                PlayerList.push($("#player_" + i).val());
+                            }
+                            $.ajax({
+                                url: "index.php",
+                                method: "POST",
+                                cache: false,
+                                data: { "status": "create_confirmed", "game_id_create": $("#game_id_create").val(), "players": PlayerList, "player_amount": PlayerList.length },
+                                success: function (created) {
+                                    if (created == "created") {
+                                        window.location.href = 'game.html';
+                                        $('.error_message').text('Game created successfully!').css("color", "green")
+                                    } else {
+                                        $('.error_message').text('An error occured, please try again later').css("color", "red")
+                                    }
+                                }
+                            });
+                        } else if (result == "false") {
+                            $('.error_message').text('This game ID is already used! Pick another one.').css("color", "red")
+                        }
+                    }
+                });
+            } else {
+                $('.error_message').text('Pick a game ID longer than 6 characters!').css("color", "red")
+            }
+        });
+
+        $("#load").click(function () {
+            if ($("#game_id_login").val().length > 6) {
+                $.ajax({
+                    type: "POST",
+                    url: "index.php",
+                    cache: false,
+                    data: { "status": "load_clicked", "game_id_login": $("#game_id_login").val() },
+                    success: function (result) {
+                        if (result == "true") {
+                            window.location.href = 'game.html';
+                        } else if (result == "false") {
+                            $('.error_message').text('This game ID is invalid! Please try again.').css("color", "red")
+                        }
+                    }
+                });
+            } else {
+                $('.error_message').text('A game ID is at least 6 characters').css("color", "red")
+            }
+        });
+    </script>
+</body>

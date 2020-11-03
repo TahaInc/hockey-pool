@@ -1,0 +1,243 @@
+@font-face {
+	font-family: CircularBold;
+	src: url('../assets/CircularStd-Medium.ttf') format('truetype'),
+		url('../assets/CircularStd-Medium.woff') format('woff');
+}
+
+html {
+	height: 100%;
+	width: 100%;
+	background-color: black;
+	overflow-y: hidden;
+}
+
+* {
+	font-family: 'CircularBold';
+}
+
+button,
+input:focus {
+	outline: 0;
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+}
+
+::-webkit-scrollbar-track {
+	background: #1d1d44;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #363795;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #272866;
+}
+
+.hidden {
+	display: none;
+}
+
+input {
+	width: 130px;
+	font-size: 1rem;
+	border: 0;
+	background: transparent;
+	font-family: 'CircularBold';
+	border-bottom: 1px solid white;
+	color: white;
+}
+
+th {
+	min-width: 360px;
+	font-family: 'CircularBold';
+	color: white;
+}
+
+p {
+	font-family: 'CircularBold';
+	color: white;
+	margin-left: 5px;
+	margin-top: 2px;
+	margin-bottom: 0;
+}
+
+.pos {
+	width: 30px;
+}
+
+.team {
+	width: 40px;
+}
+
+.goal {
+	width: 20px;
+}
+
+.assist {
+	width: 20px;
+}
+
+.pts {
+	width: 30px;
+}
+
+.gp {
+	width: 20px;
+}
+
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: 120px;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px 0;
+	position: absolute;
+	z-index: 1;
+	bottom: 150%;
+	left: 50%;
+	margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: black transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
+#background_image {
+	position: fixed;
+	z-index: -99999999;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	background: #005c97;
+	background: -webkit-linear-gradient(to bottom, #005c97, #363795);
+	background: linear-gradient(to bottom, #005c97, #363795);
+	filter: blur(1px);
+	opacity: 0.8;
+}
+
+#loading {
+	position: absolute;
+	transform: translate(-50%, -50%);
+	top: 45%;
+	left: 50%;
+	font-size: 3em;
+	font-family: 'CircularBold';
+	color: white;
+}
+
+#total_table {
+	margin-top: 8px;
+}
+
+#btnAddPlayer {
+	margin: 10px;
+	width: 130px;
+	font-family: 'CircularBold';
+	background: #363795;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 1em;
+	padding: 0.5rem 1rem 0.5rem 1rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 6px;
+	position: relative;
+}
+
+#btnAddPlayer:hover {
+	background: #252668;
+	transition: all 0.5s;
+	border-radius: 6px;
+	box-shadow: 0px 6px 15px #2526689d;
+}
+#btnAddPlayer:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#btnDelPlayer {
+	margin: 10px;
+	width: 130px;
+	font-family: 'CircularBold';
+	background: #363795;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 1em;
+	padding: 0.5rem 1rem 0.5rem 1rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 6px;
+	position: relative;
+}
+
+#btnDelPlayer:hover {
+	background: #252668;
+	transition: all 0.5s;
+	border-radius: 6px;
+	box-shadow: 0px 6px 15px #2526689d;
+}
+#btnDelPlayer:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#btnSaveChanges {
+	margin: 10px;
+	width: 250px;
+	font-family: 'CircularBold';
+	background: #363795;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 1em;
+	padding: 0.5rem 1rem 0.5rem 1rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 6px;
+	position: relative;
+}
+
+#btnSaveChanges:hover {
+	background: #252668;
+	transition: all 0.5s;
+	border-radius: 6px;
+	box-shadow: 0px 6px 15px #2526689d;
+}
+#btnSaveChanges:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#button_holder {
+	position: fixed;
+	transform: translate(-50%, 0%);
+	left: 50%;
+	bottom: 3%;
+	width: 580px;
+}
+
+.PlayerName {
+	font-size: 2em;
+	padding-bottom: 15px;
+}

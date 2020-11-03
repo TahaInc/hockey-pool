@@ -1,0 +1,378 @@
+@font-face {
+	font-family: CircularBold;
+	src: url('../assets/CircularStd-Medium.ttf') format('truetype'),
+		url('../assets/CircularStd-Medium.woff') format('woff');
+}
+
+html {
+	height: 100%;
+	width: 100%;
+	background-color: black;
+	overflow: hidden;
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+}
+
+::-webkit-scrollbar-track {
+	background: #f1f1f100;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(136, 136, 136, 0.678);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(85, 85, 85, 0.856);
+}
+
+#background_image {
+	position: fixed;
+	z-index: -99999999;
+	right: 0;
+	bottom: 0;
+	min-width: 100%;
+	min-height: 100%;
+	opacity: 0.2;
+	filter: blur(6px);
+}
+
+.hidden {
+	display: none;
+}
+
+.title {
+	text-align: center;
+	font-family: 'CircularBold';
+	font-size: 5em;
+	color: white;
+	margin: 3%;
+}
+
+.button_holder {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+.error_message {
+	min-height: 20px;
+	margin: 10px 0px 0px 5px;
+	font-family: 'CircularBold';
+	font-size: 15px;
+	color: red;
+}
+
+#main_button {
+	position: absolute;
+	transform: translate(-50%, -50%);
+	top: 50%;
+	left: 50%;
+}
+
+button,
+input:focus {
+	outline: 0;
+}
+
+#start_game {
+	margin: 20px;
+	font-family: 'CircularBold';
+	background: #2b2bff;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 2em;
+	padding: 1.5rem 3rem 1.5rem 3rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 8px;
+	width: auto;
+	position: relative;
+}
+
+#start_game::after {
+	content: "\f054";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	position: absolute;
+	left: 85%;
+	top: 31%;
+	right: 5%;
+	bottom: 0;
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+#start_game:hover {
+	background: #00008a;
+	transition: all 0.5s;
+	border-radius: 10px;
+	box-shadow: 0px 6px 15px #0000ff61;
+	padding: 1.5rem 5rem 1.5rem 3rem;
+}
+#start_game:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#load_game {
+	margin: 20px;
+	font-family: 'CircularBold';
+	background: #2b2bff;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 2em;
+	padding: 1.5rem 3rem 1.5rem 3rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 8px;
+	width: auto;
+	position: relative;
+}
+
+#load_game::after {
+	content: "\f2f6";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	position: absolute;
+	left: 85%;
+	top: 31%;
+	right: 5%;
+	bottom: 0;
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+#load_game:hover {
+	background: #00008a;
+	transition: all 0.5s;
+	border-radius: 10px;
+	box-shadow: 0px 6px 15px #0000ff61;
+	padding: 1.5rem 5rem 1.5rem 3rem;
+}
+#load_game:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#load_game_menu {
+	position: absolute;
+	transform: translate(-50%, -50%);
+	top: 60%;
+	left: 50%;
+}
+
+#game_id_login {
+	padding: 1.5rem 2rem;
+	border-radius: 0.2rem;
+	font-size: 2rem;
+	font-family: 'CircularBold';
+}
+
+.go_back {
+	margin: 20px;
+	font-family: 'CircularBold';
+	background: #2b2bff;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 2em;
+	padding: 1.5rem 3rem 1.5rem 3rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 8px;
+	width: auto;
+	position: relative;
+}
+
+.go_back::after {
+	content: "\f04a";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	position: absolute;
+	left: 75%;
+	top: 31%;
+	right: 5%;
+	bottom: 0;
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+.go_back:hover {
+	background: #00008a;
+	transition: all 0.5s;
+	border-radius: 10px;
+	box-shadow: 0px 6px 15px #0000ff61;
+	padding: 1.5rem 5rem 1.5rem 3rem;
+}
+.go_back:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#load {
+	margin: 20px;
+	font-family: 'CircularBold';
+	background: #2b2bff;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 2em;
+	padding: 1.5rem 3rem 1.5rem 3rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 8px;
+	width: auto;
+	position: relative;
+}
+
+#load::after {
+	content: "\f2f6";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	position: absolute;
+	left: 85%;
+	top: 31%;
+	right: 5%;
+	bottom: 0;
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+#load:hover {
+	background: #00008a;
+	transition: all 0.5s;
+	border-radius: 10px;
+	box-shadow: 0px 6px 15px #0000ff61;
+	padding: 1.5rem 5rem 1.5rem 3rem;
+}
+#load:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#create_game_menu {
+	position: absolute;
+	transform: translate(-50%, -50%);
+	top: 60%;
+	left: 50%;
+}
+
+#game_id_create {
+	padding: 1rem 1.1rem;
+	border-radius: 0.2rem;
+	font-size: 1.5rem;
+	font-family: 'CircularBold';
+}
+
+#create {
+	margin: 10px;
+	font-family: 'CircularBold';
+	background: #2b2bff;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 2em;
+	padding: 1.5rem 3rem 1.5rem 3rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 8px;
+	width: auto;
+	position: relative;
+}
+
+#create::after {
+	content: "\f2f6";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	position: absolute;
+	left: 85%;
+	top: 31%;
+	right: 5%;
+	bottom: 0;
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+#create:hover {
+	background: #00008a;
+	transition: all 0.5s;
+	border-radius: 10px;
+	box-shadow: 0px 6px 15px #0000ff61;
+	padding: 1.5rem 5rem 1.5rem 3rem;
+}
+#create:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#players_table {
+	width: 200px;
+	max-height: 150px;
+	overflow-y: scroll;
+	margin-right: 20px;
+}
+
+#button_table {
+	width: 320px;
+	min-height: 180px;
+}
+
+.player_name_list {
+	padding: 0.2rem 0.5rem;
+	margin: 2px;
+	border-radius: 0.2rem;
+	font-size: 1rem;
+	font-family: 'CircularBold';
+	width: 160px;
+}
+
+#btnAddPlayer {
+	margin: 10px;
+	width: 40%;
+	font-family: 'CircularBold';
+	background: #2b2bff;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 0.9em;
+	padding: 0.5rem 1rem 0.5rem 1rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 6px;
+	position: relative;
+}
+
+#btnAddPlayer:hover {
+	background: #00008a;
+	transition: all 0.5s;
+	border-radius: 6px;
+	box-shadow: 0px 6px 15px #0000ff61;
+}
+#btnAddPlayer:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
+
+#btnDelPlayer {
+	margin: 10px;
+	width: 40%;
+	font-family: 'CircularBold';
+	background: #2b2bff;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 0.9em;
+	padding: 0.5rem 1rem 0.5rem 1rem;
+	border: 0;
+	transition: all 0.5s;
+	border-radius: 6px;
+	position: relative;
+}
+
+#btnDelPlayer:hover {
+	background: #00008a;
+	transition: all 0.5s;
+	border-radius: 6px;
+	box-shadow: 0px 6px 15px #0000ff61;
+}
+#btnDelPlayer:hover::after {
+	opacity: 1;
+	transition: all 0.5s;
+}
