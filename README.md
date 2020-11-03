@@ -4,5 +4,5 @@ A website to create and organize a fantasy pool for the NHL. Pick players, and s
 ![Prompt](https://github.com/TahaInc/Hockey-Pool/blob/master/Screenshots/image1.jpg)
 #### Or you can load a previously created game.
 ![Prompt](https://github.com/TahaInc/Hockey-Pool/blob/master/Screenshots/image2.jpg)
-#### Then pick your players, and the stats will update automatically. It will even let you know if that player is injured, by greying out his name.
+#### Then pick up to 20 players, and the stats will update automatically. It will even let you know if that player is injured, by greying out his name.
 ![Prompt](https://github.com/TahaInc/Hockey-Pool/blob/master/Screenshots/image3.jpg)
