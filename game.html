@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title id="title">Hockey Pool</title>
     <link rel="stylesheet" href="css/game.css">
-    <link rel="icon" type="image/icon" href="images/icon.png" id="Icon" />
+    <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
     <script src="https://code.jquery.com/jquery-3.5.1.js"
         integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
@@ -21,12 +21,37 @@
             <tr id="player_names">
 
             </tr>
+            <tr id="data_info">
+
+            </tr>
         </table>
         <table id="total_table">
             <tr id="total_data">
 
             </tr>
         </table>
+        <div id="help_popup">
+            <div id="popup_content">
+                <div id="popup_header">
+                    <span id="close">&times;</span>
+                    <h2 id="help_text">Help</h2>
+                </div>
+                <div id="popup_body">
+                    <img class="dothelp" src="assets/greendot.png">
+                    <p class="help_desc">Player will be playing tonight</p>
+                    <br>
+                    <img class="dothelp" src="assets/yellowdot.png">
+                    <p class="help_desc">Player might be playing tonight</p>
+                    <br>
+                    <img class="dothelp" src="assets/reddot.png">
+                    <p class="help_desc">Player has no game tonight</p>
+                    <br>
+                    <img class="dothelp" src="assets/greydot.png">
+                    <p class="help_desc">Player is injured</p>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="btnHelp">?</button>
         <div id="button_holder">
             <button type="button" id="btnAddPlayer">Add Player</button>
             <button type="button" id="btnDelPlayer">Delete Player</button>
@@ -36,132 +61,299 @@
 
     <script type="text/javascript">
 
-        GetPlayerList();
-        GetPointsList();
-        GetTeamList();
-        GetPositionList();
-        GetGPList();
-        GetInjuryList();
-        GetAssistsList();
-        GetGoalList()
-        GetWinsList()
+        GetAllData();
+        $('#btnDelPlayer').prop('disabled', true);
 
         Player_List = [];
         Points_List = [];
         Goal_List = [];
         Assist_List = [];
         Wins_List = [];
+        SO_List = [];
+        OTL_List = [];
         Team_List = [];
         Position_List = [];
         GP_List = [];
-        Injuries = ""
+        Injuries = "";
+        Schedule = "";
+        Team_GP_List = [];
+        Team_Stats_List = [];
+        LastNightPlayerName = [];
+        LastNightPlayerAssist = [];
+        LastNightPlayerGoal = [];
 
-        function GetPlayerList() {
+        function GetAllData() {
+            FunctionOne = $.Deferred();
+            FunctionTwo = $.Deferred();
+            FunctionThree = $.Deferred();
+            FunctionFour = $.Deferred();
+            FunctionFive = $.Deferred();
+
+            GetPlayerData()
+            GetTeamData()
+            GetInjuryData();
+            GetScheduleData();
+            GetLastNightData()
+
+            return $.when(FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive).done().promise();
+        }
+
+        $(function () {
+            GetAllData().done(function () {
+                LoadData();
+            });
+        });
+
+        function GetPlayerData() {
             $.ajax({
                 type: "POST",
                 url: "game.php",
-                cache: false,
-                data: { "status": "get_player_list" },
+                data: { "status": "PlayerInfo" },
                 success: function (result) {
-                    Player_List = result.split(",");
+                    var PlayerData = result.split("*")
+                    for (var i = 0; i < PlayerData.length; i++) {
+                        if (i == 0) {
+                            Player_List = PlayerData[0].split(",");
+                        } else if (i == 1) {
+                            Points_List = PlayerData[1].split(",");
+                        } else if (i == 2) {
+                            Goal_List = PlayerData[2].split(",");
+                        } else if (i == 3) {
+                            Assist_List = PlayerData[3].split(",");
+                        } else if (i == 4) {
+                            Wins_List = PlayerData[4].split(",");
+                        } else if (i == 5) {
+                            SO_List = PlayerData[5].split(",");
+                        } else if (i == 6) {
+                            OTL_List = PlayerData[6].split(",");
+                        } else if (i == 7) {
+                            Team_List = PlayerData[7].split(",");
+                        } else if (i == 8) {
+                            Position_List = PlayerData[8].split(",");
+                        } else if (i == 9) {
+                            GP_List = PlayerData[9].split(",");
+                        }
+                    }
+                    FunctionOne.resolve();
                 }
             });
         }
 
-        function GetPointsList() {
+        function GetInjuryData() {
             $.ajax({
                 type: "POST",
                 url: "game.php",
                 cache: false,
-                data: { "status": "get_points_list" },
-                success: function (result) {
-                    Points_List = result.split(",");
-                }
-            });
-        }
-
-        function GetGoalList() {
-            $.ajax({
-                type: "POST",
-                url: "game.php",
-                cache: false,
-                data: { "status": "get_goal_list" },
-                success: function (result) {
-                    Goal_List = result.split(",");
-                }
-            });
-        }
-
-        function GetAssistsList() {
-            $.ajax({
-                type: "POST",
-                url: "game.php",
-                cache: false,
-                data: { "status": "get_assist_list" },
-                success: function (result) {
-                    Assist_List = result.split(",");
-                }
-            });
-        }
-
-        function GetWinsList() {
-            $.ajax({
-                type: "POST",
-                url: "game.php",
-                cache: false,
-                data: { "status": "get_wins_list" },
-                success: function (result) {
-                    Wins_List = result.split(",");
-                }
-            });
-        }
-
-        function GetTeamList() {
-            $.ajax({
-                type: "POST",
-                url: "game.php",
-                cache: false,
-                data: { "status": "get_team_list" },
-                success: function (result) {
-                    Team_List = result.split(",");
-                }
-            });
-        }
-
-        function GetPositionList() {
-            $.ajax({
-                type: "POST",
-                url: "game.php",
-                cache: false,
-                data: { "status": "get_position_list" },
-                success: function (result) {
-                    Position_List = result.split(",");
-                }
-            });
-        }
-
-        function GetGPList() {
-            $.ajax({
-                type: "POST",
-                url: "game.php",
-                cache: false,
-                data: { "status": "get_gp_list" },
-                success: function (result) {
-                    GP_List = result.split(",");
-                }
-            });
-        }
-
-        function GetInjuryList() {
-            $.ajax({
-                type: "POST",
-                url: "game.php",
-                cache: false,
-                data: { "status": "get_injury_list" },
+                data: { "status": "InjuryInfo" },
                 success: function (result) {
                     Injuries = result;
+                    FunctionTwo.resolve();
                 }
             });
+        }
+
+        function GetTeamData() {
+            $.ajax({
+                type: "POST",
+                url: "game.php",
+                data: { "status": "TeamInfo" },
+                success: function (result) {
+                    var TeamData = result.split("*")
+                    for (var i = 0; i < TeamData.length; i++) {
+                        if (i == 0) {
+                            Team_GP_List = TeamData[0].split(",");
+                        } else if (i == 1) {
+                            Team_Stats_List = TeamData[1].split(",");
+                        }
+                    }
+                    FunctionThree.resolve();
+                }
+            });
+        }
+
+        function GetScheduleData() {
+            $.ajax({
+                type: "POST",
+                url: "game.php",
+                data: { "status": "ScheduleInfo" },
+                success: function (result) {
+                    Schedule = result;
+                    FunctionFour.resolve();
+                }
+            });
+        }
+
+        function GetLastNightData() {
+            $.ajax({
+                type: "POST",
+                url: "game.php",
+                data: { "status": "LastNightInfo" },
+                success: function (result) {
+                    var lines = result.split("\n");
+                    for (i = 0; i <= (lines.length - 2); i++) {
+                        if (lines[i].match(/\D/) == null) {
+                            if (lines[i + 1].match(/\D/) == null) {
+                                LastNightPlayerAssist.push(lines[i])
+                            } else {
+                                LastNightPlayerGoal.push(lines[i])
+                            }
+
+                        } else {
+                            if (lines[i + 1].match(/\D/) == null && lines[i + 2].match(/\D/) == null) {
+                                LastNightPlayerName.push(lines[i])
+                            }
+                        }
+                    }
+                    LastNightPlayerName.splice(-1, 1);
+                    LastNightPlayerAssist.splice(-1, 1);
+
+                    FunctionFive.resolve();
+                }
+            });
+        }
+
+        function UpdateStats(input_element) {
+            if (Player_List.includes(input_element.val())) {
+                input_element.css({ "color": "white" });
+                var PlayerID = jQuery.inArray(input_element.val(), Player_List)
+                var GamePlayerID = jQuery.inArray(input_element.val(), LastNightPlayerName)
+                var GameGoals = ""
+                var GameAssist = ""
+                var GamePoints = ""
+                if (GamePlayerID == -1) {
+                    GamePoints = 0
+                } else {
+                    GameGoals = LastNightPlayerGoal[GamePlayerID]
+                    GameAssist = LastNightPlayerAssist[GamePlayerID]
+                    GamePoints = parseInt(GameGoals) + parseInt(GameAssist)
+                }
+                var Player_Points = Points_List[PlayerID]
+                var Wins_Points = (Wins_List[PlayerID]) * 2
+                var Goalie_Points = Points_List[PlayerID]
+                var Goalie_Shutout = SO_List[PlayerID] * 3
+                var Goalie_OTL = OTL_List[PlayerID]
+                var Goalie_Pool_Points = parseInt(Goalie_Points) + parseInt(Wins_Points) + parseInt(Goalie_Shutout) + parseInt(OTL_List)
+                var Player_Assists = Assist_List[PlayerID]
+                var Player_Goals = Goal_List[PlayerID]
+                var Player_Team = Team_List[PlayerID]
+                var Player_Position = Position_List[PlayerID]
+                var Player_GP = GP_List[PlayerID]
+                var Team_Stats = jQuery.inArray(Player_Team, Team_Stats_List)
+                var Team_GP = Team_GP_List[Team_Stats]
+                if (Team_GP == null) {
+                    var Player_GM = 0
+                } else {
+                    var Player_GM = parseInt(Team_GP) - parseInt(Player_GP)
+                }
+                if (Player_Position == "") {
+                    input_element.siblings(".dotstatus").attr("src", "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=");
+                    input_element.siblings(".team_pic").attr("src", "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=");
+                    input_element.siblings(".pos").text("-").append('<span class="tooltiptext">Position</span>');
+                    input_element.siblings(".goal").text("0").append('<span class="tooltiptext">Goals</span>');
+                    input_element.siblings(".assist").text("0").append('<span class="tooltiptext">Assists</span>');
+                    input_element.siblings(".pts").text("0").append('<span class="tooltiptext">Points</span>');
+                    input_element.siblings(".pln").text("0").append('<span class="tooltiptext">Points last night</span>');
+                    input_element.siblings(".gp").text("0").append('<span class="tooltiptext">Game played</span>');
+                    input_element.siblings(".gm").text("0").append('<span class="tooltiptext">Game missed</span>');
+                } else if (Player_Position == "G") {
+                    if (Injuries.includes(input_element.val())) {
+                        input_element.siblings(".dotstatus").attr("src", "assets/greydot.png");
+                    } else if (Schedule.includes(Player_Team)) {
+                        input_element.siblings(".dotstatus").attr("src", "assets/yellowdot.png");
+                        if (Schedule.includes(input_element.val())) {
+                            input_element.siblings(".dotstatus").attr("src", "assets/greendot.png");
+                        }
+                    } else {
+                        input_element.siblings(".dotstatus").attr("src", "assets/reddot.png");
+                    }
+                    input_element.siblings(".team_pic").attr("src", "https://content.rotowire.com/images/teamlogo/hockey/100" + Player_Team + ".png");
+                    input_element.siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
+                    input_element.siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
+                    input_element.siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
+                    input_element.siblings(".pts").text(Goalie_Pool_Points).append('<span class="tooltiptext">Points</span>');
+                    input_element.siblings(".pln").text(GamePoints).append('<span class="tooltiptext">Points last night</span>');
+                    input_element.siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
+                    input_element.siblings(".gm").text(Player_GM).append('<span class="tooltiptext">Game missed</span>');
+                } else {
+                    if (Injuries.includes(input_element.val())) {
+                        input_element.siblings(".dotstatus").attr("src", "assets/greydot.png");
+                    } else if (Schedule.includes(Player_Team)) {
+                        input_element.siblings(".dotstatus").attr("src", "assets/greendot.png");
+                    } else {
+                        input_element.siblings(".dotstatus").attr("src", "assets/reddot.png");
+                    }
+                    input_element.siblings(".team_pic").attr("src", "https://content.rotowire.com/images/teamlogo/hockey/100" + Player_Team + ".png");
+                    input_element.siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
+                    input_element.siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
+                    input_element.siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
+                    input_element.siblings(".pts").text(Player_Points).append('<span class="tooltiptext">Points</span>');
+                    input_element.siblings(".pln").text(GamePoints).append('<span class="tooltiptext">Points last night</span>');
+                    input_element.siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
+                    input_element.siblings(".gm").text(Player_GM).append('<span class="tooltiptext">Game missed</span>');
+                }
+
+                totalpts_list = []
+                player_id_list = []
+                var count = 1
+                for (i = 1; i < (player_count + 1); i++) {
+                    var totalpts = 0
+                    var player_id = i
+                    for (x = 1; x < player_index; x++) {
+                        pts = $("#Player_" + x + " th:nth-child(" + player_id + ")").find(".pts").text()
+                        totalpts += parseInt(pts);
+                    }
+                    totalpts_list.push(totalpts)
+                    player_id_list.push(count)
+                    count += 1
+                }
+
+                var reorder = [];
+                for (var j = 0; j < player_list_order.length; j++) {
+                    reorder.push({ name: player_id_list[j], pts: totalpts_list[j] });
+                }
+
+                reorder.sort(function (a, b) { return b.pts - a.pts });
+
+                for (var k = 0; k < reorder.length; k++) {
+                    player_id_list[k] = reorder[k].name;
+                    totalpts_list[k] = reorder[k].pts;
+                }
+
+                var PlaceNumber = 1
+
+                for (i = 0; i < player_count; i++) {
+                    var PlaceText = ""
+                    if (PlaceNumber == 1) {
+                        PlaceText = "1st Place  -"
+                    } else if (PlaceNumber == 2) {
+                        PlaceText = "2nd Place  -"
+                    } else if (PlaceNumber == 3) {
+                        PlaceText = "3rd Place  -"
+                    } else {
+                        PlaceText = PlaceNumber + "th Place  -"
+                    }
+
+                    var pts_behind = parseInt(totalpts_list[0]) - parseInt(totalpts_list[i])
+                    var firstplace = name_list[player_id_list[0] - 1]
+                    var subtext = ""
+
+                    if (pts_behind == 0) {
+                        subtext = ""
+                    } else {
+                        subtext = '<span class="place_subtext">' + pts_behind + ' pts behind ' + firstplace + '</span>'
+                    }
+
+                    $("#Total_" + player_id_list[i]).html('<p class="place_text">' + PlaceText + " Total points: " + totalpts_list[i] + '</p > ' + subtext)
+
+                    if (totalpts_list[i + 1] != totalpts_list[i]) {
+                        PlaceNumber += 1
+                    }
+                }
+
+            } else {
+                input_element.css({ "color": "#ff7070" });
+            }
+            $('#btnSaveChanges').html("Save changes")
         }
 
         $(document).ready(function () {
@@ -177,10 +369,7 @@
                 }
                 if (loading.innerHTML.length > 2)
                     window.dotsGoingUp = false;
-
-
-
-            }, 500);
+            }, 400);
 
             (function () {
                 function scrollHorizontally(e) {
@@ -196,6 +385,9 @@
                     window.attachEvent("onmousewheel", scrollHorizontally);
                 }
             })();
+        });
+
+        function LoadData() {
             $.ajax({
                 type: "POST",
                 url: "game.php",
@@ -207,6 +399,7 @@
                         window.location.href = 'index.html';
                     }
                     else {
+
                         player_index = 0
                         player_count = 1
                         player_list = []
@@ -224,6 +417,10 @@
                                         var player_name = eval("Player_" + player_count + "[0]").slice(0, -1);
                                         element.append('<th class="PlayerName" id="User_' + player_count + '">' + player_name + '</th>');
                                         name_list.push(player_name)
+                                    });
+                                    $('#data_info').each(function () {
+                                        var element = $(this);
+                                        element.append('<th class="DataInfo" id="Data_' + player_count + '"><p class="tooltip name data">NAME<span class="tooltiptext">Player name</span></p><p class="tooltip pos data">POS<span class="tooltiptext">Position</span></p><p class="tooltip goal data">G<span class="tooltiptext">Goals</span></p><p class="tooltip assist data">A<span class="tooltiptext">Assists</span></p><p class="tooltip pts data">PTS<span class="tooltiptext">Points</span></p><p class="tooltip pts data">PLN<span class="tooltiptext">Points last night</span></p><p class="tooltip gp data">GP<span class="tooltiptext">Game Played</span></p><p class="tooltip gm data">GM<span class="tooltiptext">Games missed</span></p></th>');
                                     });
                                     $('#total_data').each(function () {
                                         var element = $(this);
@@ -246,6 +443,10 @@
                             element.append('<th class="PlayerName" id="User_' + player_count + '">' + player_name + '</th>');
                             name_list.push(player_name)
                         });
+                        $('#data_info').each(function () {
+                            var element = $(this);
+                            element.append('<th class="DataInfo" id="Data_' + player_count + '"><p class="tooltip name data">NAME<span class="tooltiptext">Player name</span></p><p class="tooltip pos data">POS<span class="tooltiptext">Position</span></p><p class="tooltip goal data">G<span class="tooltiptext">Goals</span></p><p class="tooltip assist data">A<span class="tooltiptext">Assists</span></p><p class="tooltip pts data">PTS<span class="tooltiptext">Points</span></p><p class="tooltip pts data">PLN<span class="tooltiptext">Points last night</span></p><p class="tooltip gp data">GP<span class="tooltiptext">Game Played</span></p><p class="tooltip gm data">GM<span class="tooltiptext">Games missed</span></p></th>');
+                        });
                         $('#total_data').each(function () {
                             var element = $(this);
                             element.append('<th id="Total_' + player_count + '"></th>');
@@ -253,6 +454,9 @@
 
                         player_index = 1
                         for (i = 1; i < (eval("Player_1")).length; i++) {
+                            $("#data_info").css({ "opacity": "1" })
+                            $("#total_data").css({ "opacity": "1" })
+                            $('#btnDelPlayer').prop('disabled', false);
                             $('#info_table').each(function () {
                                 var element = $(this);
                                 element.append('<tr id=Player_' + i + '><tr>');
@@ -260,11 +464,54 @@
                                     $('#Player_' + player_index).each(function () {
                                         var element = $(this);
                                         var player_name = (eval("Player_" + x + "[" + player_index + "]")).split("=>")
-                                        element.append('<th><input class="player_input player_input_' + x + '" type="text" value="' + player_name[1] + '"></input><p class="tooltip pos">-<span class="tooltiptext">Position</span></p><p class="tooltip team">-<span class="tooltiptext">Team</span></p><p class="tooltip goal">0<span class="tooltiptext">Goals</span></p><p class="tooltip assist">0<span class="tooltiptext">Assists</span></p><p class="tooltip pts">0<span class="tooltiptext">Points</span></p><p class="tooltip gp">0<span class="tooltiptext">Game Played</span></p></th>');
+                                        element.append('<th><img class="dotstatus" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><img class="team_pic" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><input class="player_input player_input_' + x + " row" + x + "_" + i + '" type="text" value="' + player_name[1] + '"></input><p class="tooltip pos">-<span class="tooltiptext">Position</span></p><p class="tooltip goal">0<span class="tooltiptext">Goals</span></p><p class="tooltip assist">0<span class="tooltiptext">Assists</span></p><p class="tooltip pts">0<span class="tooltiptext">Points</span></p><p class="tooltip pln">0<span class="tooltiptext">Points last night</span></p><p class="tooltip gp">0<span class="tooltiptext">Game Played</span></p><p class="tooltip gm">0<span class="tooltiptext">Game missed</span></p></th>');
                                     });
                                 }
                                 player_index += 1
                             });
+                        }
+
+                        for (i = 1; i < (player_count + 1); i++) {
+                            player_list_order = []
+                            playerpts_list_order = []
+                            for (x = 1; x < (eval("Player_1")).length; x++) {
+                                datalist = eval("Player_" + i + "[" + x + "]").split("=>")
+                                player_list_order.push(datalist[1])
+                            }
+
+                            for (var x = 0; x < player_list_order.length; x++) {
+                                var PlayerID = jQuery.inArray(player_list_order[x], Player_List)
+                                var Player_Position = Position_List[PlayerID]
+                                var Wins_Points = (Wins_List[PlayerID]) * 2
+                                var Goalie_Points = Points_List[PlayerID]
+                                var Goalie_Shutout = SO_List[PlayerID] * 3
+                                var Goalie_OTL = OTL_List[PlayerID]
+                                if (PlayerID == -1) {
+                                    var Player_Points = 0
+                                }
+                                else if (Player_Position == "G") {
+                                    var Player_Points = parseInt(Goalie_Points) + parseInt(Wins_Points) + parseInt(Goalie_Shutout) + parseInt(OTL_List)
+                                } else {
+                                    var Player_Points = Points_List[PlayerID]
+                                }
+                                playerpts_list_order.push(Player_Points)
+                            }
+
+                            var reorder = [];
+                            for (var j = 0; j < player_list_order.length; j++) {
+                                reorder.push({ name: player_list_order[j], pts: playerpts_list_order[j] });
+                            }
+
+                            reorder.sort(function (a, b) { return b.pts - a.pts });
+
+                            for (var k = 0; k < reorder.length; k++) {
+                                player_list_order[k] = reorder[k].name;
+                                playerpts_list_order[k] = reorder[k].pts;
+                            }
+
+                            for (x = 0; x < player_list_order.length; x++) {
+                                $(".row" + i + "_" + (x + 1)).val(player_list_order[x])
+                            }
                         }
 
                         $("#loading").fadeOut(200);
@@ -274,457 +521,95 @@
                         });
 
                         $(".player_input").filter(function () {
-                            if (Player_List.includes($(this).val())) {
-                                if (Injuries.includes($(this).val())) {
-                                    $(this).css({ "color": "#9b9b9b", "font-weight": "normal" });
-                                } else {
-                                    $(this).css({ "color": "white", "font-weight": "normal" });
-                                }
-                                var PlayerID = jQuery.inArray(jQuery(this).val(), Player_List)
-                                var Player_Points = Points_List[PlayerID]
-                                var Wins_Points = (Wins_List[PlayerID]) * 2
-                                var Goalie_Points = Points_List[PlayerID]
-                                var Goalie_Pool_Points = parseInt(Goalie_Points) + parseInt(Wins_Points)
-                                var Player_Assists = Assist_List[PlayerID]
-                                var Player_Goals = Goal_List[PlayerID]
-                                var Player_Team = Team_List[PlayerID]
-                                var Player_Position = Position_List[PlayerID]
-                                var Player_GP = GP_List[PlayerID]
-                                if (Player_Position == "") {
-                                    $(this).siblings(".pos").text("-").append('<span class="tooltiptext">Position</span>');
-                                    $(this).siblings(".team").text("-").append('<span class="tooltiptext">Team</span>');
-                                    $(this).siblings(".goal").text("0").append('<span class="tooltiptext">Goals</span>');
-                                    $(this).siblings(".assist").text("0").append('<span class="tooltiptext">Assists</span>');
-                                    $(this).siblings(".pts").text("0").append('<span class="tooltiptext">Points</span>');
-                                    $(this).siblings(".gp").text("0").append('<span class="tooltiptext">Game played</span>');
-                                } else if (Player_Position == "G") {
-                                    $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                                    $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                                    $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                                    $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                                    $(this).siblings(".pts").text(Goalie_Pool_Points).append('<span class="tooltiptext">Points</span>');
-                                    $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                                } else {
-                                    $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                                    $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                                    $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                                    $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                                    $(this).siblings(".pts").text(Player_Points).append('<span class="tooltiptext">Points</span>');
-                                    $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                                }
-
-                                totalpts_list = []
-                                unique_totalpts_list = []
-
-                                for (i = 1; i < (player_count + 1); i++) {
-                                    var totalpts = 0
-                                    var player_id = i
-                                    for (x = 1; x < player_index; x++) {
-                                        pts = $("#Player_" + x + " th:nth-child(" + player_id + ")").find(".pts").text()
-                                        totalpts += parseInt(pts);
-                                    }
-                                    totalpts_list.push(totalpts)
-                                    unique_totalpts_list.push(totalpts)
-                                }
-
-                                var PlaceNumber = 0
-                                $.each(totalpts_list, function (i, x) {
-                                    if ($.inArray(x, unique_totalpts_list) === -1) unique_totalpts_list.push(x);
-                                });
-
-                                scorelist = []
-                                var duplicateamount = 1
-
-                                for (i = 0; i < player_count; i++) {
-                                    scorelist.push(" ")
-                                }
-
-                                for (i = 1; i < (player_count + 1); i++) {
-                                    var previoushighestnumber = highestnumber
-                                    var highestnumber = Math.max.apply(Math, totalpts_list)
-                                    if (previoushighestnumber == highestnumber) {
-                                        PlaceNumber += 0
-                                    } else {
-                                        PlaceNumber += 1
-                                    }
-                                    var ArrayID = jQuery.inArray(highestnumber, totalpts_list)
-                                    var OriginalArrayID = jQuery.inArray(highestnumber, unique_totalpts_list)
-                                    var PlaceText = ""
-                                    if (PlaceNumber == 1) {
-                                        PlaceText = "1st Place  -"
-                                    } else if (PlaceNumber == 2) {
-                                        PlaceText = "2nd Place  -"
-                                    } else if (PlaceNumber == 3) {
-                                        PlaceText = "3rd Place  -"
-                                    } else {
-                                        PlaceText = PlaceNumber.toString() + "th Place  -"
-                                    }
-                                    if (previoushighestnumber == highestnumber) {
-                                        scorelist.splice(OriginalArrayID + duplicateamount, 1, PlaceText + " Total points: " + highestnumber);
-                                        totalpts_list.splice(ArrayID, 1)
-                                        duplicateamount += 1
-                                    } else {
-                                        scorelist.splice(OriginalArrayID, 1, PlaceText + " Total points: " + highestnumber);
-                                        totalpts_list.splice(ArrayID, 1)
-                                    }
-                                }
-
-                                for (i = 0; i < player_count; i++) {
-                                    $("#Total_" + (i + 1)).text(scorelist[0])
-                                    scorelist.splice(0, 1)
-                                }
-                            } else {
-                                $(this).css({ "color": "#ff7070", "font-weight": "normal" });
-                            }
+                            UpdateStats($(this))
                         });
 
                         $(".player_input").blur(function () {
-                            if (Player_List.includes($(this).val())) {
-                                if (Injuries.includes($(this).val())) {
-                                    $(this).css({ "color": "#9b9b9b", "font-weight": "normal" });
-                                } else {
-                                    $(this).css({ "color": "white", "font-weight": "normal" });
-                                }
-                                var PlayerID = jQuery.inArray(jQuery(this).val(), Player_List)
-                                var Player_Points = Points_List[PlayerID]
-                                var Wins_Points = (Wins_List[PlayerID]) * 2
-                                var Goalie_Points = Points_List[PlayerID]
-                                var Goalie_Pool_Points = parseInt(Goalie_Points) + parseInt(Wins_Points)
-                                var Player_Assists = Assist_List[PlayerID]
-                                var Player_Goals = Goal_List[PlayerID]
-                                var Player_Team = Team_List[PlayerID]
-                                var Player_Position = Position_List[PlayerID]
-                                var Player_GP = GP_List[PlayerID]
-                                if (Player_Position == "") {
-                                    $(this).siblings(".pos").text("-").append('<span class="tooltiptext">Position</span>');
-                                    $(this).siblings(".team").text("-").append('<span class="tooltiptext">Team</span>');
-                                    $(this).siblings(".goal").text("0").append('<span class="tooltiptext">Goals</span>');
-                                    $(this).siblings(".assist").text("0").append('<span class="tooltiptext">Assists</span>');
-                                    $(this).siblings(".pts").text("0").append('<span class="tooltiptext">Points</span>');
-                                    $(this).siblings(".gp").text("0").append('<span class="tooltiptext">Game played</span>');
-                                } else if (Player_Position == "G") {
-                                    $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                                    $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                                    $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                                    $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                                    $(this).siblings(".pts").text(Goalie_Pool_Points).append('<span class="tooltiptext">Points</span>');
-                                    $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                                } else {
-                                    $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                                    $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                                    $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                                    $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                                    $(this).siblings(".pts").text(Player_Points).append('<span class="tooltiptext">Points</span>');
-                                    $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                                }
-
-                                totalpts_list = []
-                                unique_totalpts_list = []
-
-                                for (i = 1; i < (player_count + 1); i++) {
-                                    var totalpts = 0
-                                    var player_id = i
-                                    for (x = 1; x < player_index; x++) {
-                                        pts = $("#Player_" + x + " th:nth-child(" + player_id + ")").find(".pts").text()
-                                        totalpts += parseInt(pts);
-                                    }
-                                    totalpts_list.push(totalpts)
-                                    unique_totalpts_list.push(totalpts)
-                                }
-
-                                var PlaceNumber = 0
-                                $.each(totalpts_list, function (i, x) {
-                                    if ($.inArray(x, unique_totalpts_list) === -1) unique_totalpts_list.push(x);
-                                });
-
-                                scorelist = []
-                                var duplicateamount = 1
-
-                                for (i = 0; i < player_count; i++) {
-                                    scorelist.push(" ")
-                                }
-
-                                for (i = 1; i < (player_count + 1); i++) {
-                                    var previoushighestnumber = highestnumber
-                                    var highestnumber = Math.max.apply(Math, totalpts_list)
-                                    if (previoushighestnumber == highestnumber) {
-                                        PlaceNumber += 0
-                                    } else {
-                                        PlaceNumber += 1
-                                    }
-                                    var ArrayID = jQuery.inArray(highestnumber, totalpts_list)
-                                    var OriginalArrayID = jQuery.inArray(highestnumber, unique_totalpts_list)
-                                    var PlaceText = ""
-                                    if (PlaceNumber == 1) {
-                                        PlaceText = "1st Place  -"
-                                    } else if (PlaceNumber == 2) {
-                                        PlaceText = "2nd Place  -"
-                                    } else if (PlaceNumber == 3) {
-                                        PlaceText = "3rd Place  -"
-                                    } else {
-                                        PlaceText = PlaceNumber.toString() + "th Place  -"
-                                    }
-                                    if (previoushighestnumber == highestnumber) {
-                                        scorelist.splice(OriginalArrayID + duplicateamount, 1, PlaceText + " Total points: " + highestnumber);
-                                        totalpts_list.splice(ArrayID, 1)
-                                        duplicateamount += 1
-                                    } else {
-                                        scorelist.splice(OriginalArrayID, 1, PlaceText + " Total points: " + highestnumber);
-                                        totalpts_list.splice(ArrayID, 1)
-                                    }
-                                }
-
-                                for (i = 0; i < player_count; i++) {
-                                    $("#Total_" + (i + 1)).text(scorelist[0])
-                                    scorelist.splice(0, 1)
-                                }
-                            } else {
-                                $(this).css({ "color": "#ff7070", "font-weight": "normal" });
-                            }
+                            UpdateStats($(this))
                         });
+
+                        if (player_index >= 16) {
+                            $('#btnAddPlayer').prop('disabled', true);
+                        }
+
+                        if (player_index <= 1) {
+                            $('#btnDelPlayer').prop('disabled', true);
+                        }
                     }
                 }
             });
-        });
+        }
 
         $('#btnAddPlayer').click(function () {
-            if (player_index >= 20) {
-                alert("Max amount of player")
-            } else {
-                $('#info_table').each(function () {
-                    var element = $(this);
-                    element.append('<tr id=Player_' + player_index + '><tr>');
-                    for (x = 1; x < (player_count + 1); x++) {
-                        $('#Player_' + player_index).each(function () {
-                            var element = $(this);
-                            element.append('<th><input class="player_input player_input_' + x + '" type="text" value=""></input><p class="tooltip pos">-<span class="tooltiptext">Position</span></p><p class="tooltip team">-<span class="tooltiptext">Team</span></p><p class="tooltip goal">0<span class="tooltiptext">Goals</span></p><p class="tooltip assist">0<span class="tooltiptext">Assists</span></p><p class="tooltip pts">0<span class="tooltiptext">Points</span></p><p class="tooltip gp">0<span class="tooltiptext">Game Played</span></p></th>');
-                        });
-                    }
-                    player_index += 1
-                });
+            $('#btnDelPlayer').prop('disabled', false);
+            $("#data_info").css({ "opacity": "1" })
+            $("#total_data").css({ "opacity": "1" })
+
+            $('#btnSaveChanges').html("Save changes")
+            $('#info_table').each(function () {
+                var element = $(this);
+                element.append('<tr id=Player_' + player_index + '><tr>');
+                for (x = 1; x < (player_count + 1); x++) {
+                    $('#Player_' + player_index).each(function () {
+                        var element = $(this);
+                        element.append('<th><img class="dotstatus" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><img class="team_pic" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><input class="player_input player_input_' + x + " row" + x + "_" + player_index + '" type="text" value=""></input><p class="tooltip pos">-<span class="tooltiptext">Position</span></p><p class="tooltip goal">0<span class="tooltiptext">Goals</span></p><p class="tooltip assist">0<span class="tooltiptext">Assists</span></p><p class="tooltip pts">0<span class="tooltiptext">Points</span></p><p class="tooltip pln">0<span class="tooltiptext">Points last night</span></p><p class="tooltip gp">0<span class="tooltiptext">Game Played</span></p><p class="tooltip gm">0<span class="tooltiptext">Game missed</span></p></th>');
+                    });
+                }
+                player_index += 1
+            });
+
+            if (player_index >= 16) {
+                $('#btnAddPlayer').prop('disabled', true);
             }
+
             $(".player_input").autocomplete({
                 source: Player_List
             });
 
+            if (player_index == 2) {
+                $(".player_input").filter(function () {
+                    UpdateStats($(this))
+                });
+            }
+
             $(".player_input").blur(function () {
-                if (Player_List.includes($(this).val())) {
-                    if (Injuries.includes($(this).val())) {
-                        $(this).css({ "color": "#9b9b9b", "font-weight": "normal" });
-                    } else {
-                        $(this).css({ "color": "white", "font-weight": "normal" });
-                    }
-                    var PlayerID = jQuery.inArray(jQuery(this).val(), Player_List)
-                    var Player_Points = Points_List[PlayerID]
-                    var Wins_Points = (Wins_List[PlayerID]) * 2
-                    var Goalie_Points = Points_List[PlayerID]
-                    var Goalie_Pool_Points = parseInt(Goalie_Points) + parseInt(Wins_Points)
-                    var Player_Assists = Assist_List[PlayerID]
-                    var Player_Goals = Goal_List[PlayerID]
-                    var Player_Team = Team_List[PlayerID]
-                    var Player_Position = Position_List[PlayerID]
-                    var Player_GP = GP_List[PlayerID]
-                    if (Player_Position == "") {
-                        $(this).siblings(".pos").text("-").append('<span class="tooltiptext">Position</span>');
-                        $(this).siblings(".team").text("-").append('<span class="tooltiptext">Team</span>');
-                        $(this).siblings(".goal").text("0").append('<span class="tooltiptext">Goals</span>');
-                        $(this).siblings(".assist").text("0").append('<span class="tooltiptext">Assists</span>');
-                        $(this).siblings(".pts").text("0").append('<span class="tooltiptext">Points</span>');
-                        $(this).siblings(".gp").text("0").append('<span class="tooltiptext">Game played</span>');
-                    } else if (Player_Position == "G") {
-                        $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                        $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                        $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                        $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                        $(this).siblings(".pts").text(Goalie_Pool_Points).append('<span class="tooltiptext">Points</span>');
-                        $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                    } else {
-                        $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                        $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                        $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                        $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                        $(this).siblings(".pts").text(Player_Points).append('<span class="tooltiptext">Points</span>');
-                        $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                    }
+                UpdateStats($(this))
+            });
 
-                    totalpts_list = []
-                    unique_totalpts_list = []
-
-                    for (i = 1; i < (player_count + 1); i++) {
-                        var totalpts = 0
-                        var player_id = i
-                        for (x = 1; x < player_index; x++) {
-                            pts = $("#Player_" + x + " th:nth-child(" + player_id + ")").find(".pts").text()
-                            totalpts += parseInt(pts);
-                        }
-                        totalpts_list.push(totalpts)
-                        unique_totalpts_list.push(totalpts)
-                    }
-
-                    var PlaceNumber = 0
-                    $.each(totalpts_list, function (i, x) {
-                        if ($.inArray(x, unique_totalpts_list) === -1) unique_totalpts_list.push(x);
-                    });
-
-                    scorelist = []
-                    var duplicateamount = 1
-
-                    for (i = 0; i < player_count; i++) {
-                        scorelist.push(" ")
-                    }
-
-                    for (i = 1; i < (player_count + 1); i++) {
-                        var previoushighestnumber = highestnumber
-                        var highestnumber = Math.max.apply(Math, totalpts_list)
-                        if (previoushighestnumber == highestnumber) {
-                            PlaceNumber += 0
-                        } else {
-                            PlaceNumber += 1
-                        }
-                        var ArrayID = jQuery.inArray(highestnumber, totalpts_list)
-                        var OriginalArrayID = jQuery.inArray(highestnumber, unique_totalpts_list)
-                        var PlaceText = ""
-                        if (PlaceNumber == 1) {
-                            PlaceText = "1st Place  -"
-                        } else if (PlaceNumber == 2) {
-                            PlaceText = "2nd Place  -"
-                        } else if (PlaceNumber == 3) {
-                            PlaceText = "3rd Place  -"
-                        } else {
-                            PlaceText = PlaceNumber.toString() + "th Place  -"
-                        }
-                        if (previoushighestnumber == highestnumber) {
-                            scorelist.splice(OriginalArrayID + duplicateamount, 1, PlaceText + " Total points: " + highestnumber);
-                            totalpts_list.splice(ArrayID, 1)
-                            duplicateamount += 1
-                        } else {
-                            scorelist.splice(OriginalArrayID, 1, PlaceText + " Total points: " + highestnumber);
-                            totalpts_list.splice(ArrayID, 1)
-                        }
-                    }
-
-                    for (i = 0; i < player_count; i++) {
-                        $("#Total_" + (i + 1)).text(scorelist[0])
-                        scorelist.splice(0, 1)
-                    }
-                } else {
-                    $(this).css({ "color": "#ff7070", "font-weight": "normal" });
-                }
+            $('tr').each(function () {
+                var $this = $(this);
+                if ($this.html().replace(/\s|&nbsp;/g, '').length == 0)
+                    $this.remove();
             });
         });
 
         $('#btnDelPlayer').click(function () {
-            if (player_index == 0) {
-                alert("Min amount of player")
-            } else {
-                $('#info_table').each(function () {
-                    $("#Player_" + (player_index - 1)).remove();
-                    player_index -= 1
-                });
+            $('#btnAddPlayer').prop('disabled', false);
+
+            $('#btnSaveChanges').val("Save changes")
+            $('#info_table').each(function () {
+                $("#Player_" + (player_index - 1)).remove();
+                player_index -= 1
+            });
+
+            if (player_index <= 1) {
+                $('#btnDelPlayer').prop('disabled', true);
+                $("#data_info").css({ "opacity": "0" })
+                $("#total_data").css({ "opacity": "0" })
             }
+
+            $(".player_input").filter(function () {
+                UpdateStats($(this))
+            });
+
             $(".player_input").blur(function () {
-                if (Player_List.includes($(this).val())) {
-                    if (Injuries.includes($(this).val())) {
-                        $(this).css({ "color": "#9b9b9b", "font-weight": "normal" });
-                    } else {
-                        $(this).css({ "color": "white", "font-weight": "normal" });
-                    }
-                    var PlayerID = jQuery.inArray(jQuery(this).val(), Player_List)
-                    var Player_Points = Points_List[PlayerID]
-                    var Wins_Points = (Wins_List[PlayerID]) * 2
-                    var Goalie_Points = Points_List[PlayerID]
-                    var Goalie_Pool_Points = parseInt(Goalie_Points) + parseInt(Wins_Points)
-                    var Player_Assists = Assist_List[PlayerID]
-                    var Player_Goals = Goal_List[PlayerID]
-                    var Player_Team = Team_List[PlayerID]
-                    var Player_Position = Position_List[PlayerID]
-                    var Player_GP = GP_List[PlayerID]
-                    if (Player_Position == "") {
-                        $(this).siblings(".pos").text("-").append('<span class="tooltiptext">Position</span>');
-                        $(this).siblings(".team").text("-").append('<span class="tooltiptext">Team</span>');
-                        $(this).siblings(".goal").text("0").append('<span class="tooltiptext">Goals</span>');
-                        $(this).siblings(".assist").text("0").append('<span class="tooltiptext">Assists</span>');
-                        $(this).siblings(".pts").text("0").append('<span class="tooltiptext">Points</span>');
-                        $(this).siblings(".gp").text("0").append('<span class="tooltiptext">Game played</span>');
-                    } else if (Player_Position == "G") {
-                        $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                        $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                        $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                        $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                        $(this).siblings(".pts").text(Goalie_Pool_Points).append('<span class="tooltiptext">Points</span>');
-                        $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                    } else {
-                        $(this).siblings(".pos").text(Player_Position).append('<span class="tooltiptext">Position</span>');
-                        $(this).siblings(".team").text(Player_Team).append('<span class="tooltiptext">Team</span>');
-                        $(this).siblings(".goal").text(Player_Goals).append('<span class="tooltiptext">Goals</span>');
-                        $(this).siblings(".assist").text(Player_Assists).append('<span class="tooltiptext">Assists</span>');
-                        $(this).siblings(".pts").text(Player_Points).append('<span class="tooltiptext">Points</span>');
-                        $(this).siblings(".gp").text(Player_GP).append('<span class="tooltiptext">Game played</span>');
-                    }
+                UpdateStats($(this))
+            });
 
-                    totalpts_list = []
-                    unique_totalpts_list = []
-
-                    for (i = 1; i < (player_count + 1); i++) {
-                        var totalpts = 0
-                        var player_id = i
-                        for (x = 1; x < player_index; x++) {
-                            pts = $("#Player_" + x + " th:nth-child(" + player_id + ")").find(".pts").text()
-                            totalpts += parseInt(pts);
-                        }
-                        totalpts_list.push(totalpts)
-                        unique_totalpts_list.push(totalpts)
-                    }
-
-                    var PlaceNumber = 0
-                    $.each(totalpts_list, function (i, x) {
-                        if ($.inArray(x, unique_totalpts_list) === -1) unique_totalpts_list.push(x);
-                    });
-
-                    scorelist = []
-                    var duplicateamount = 1
-
-                    for (i = 0; i < player_count; i++) {
-                        scorelist.push(" ")
-                    }
-
-                    for (i = 1; i < (player_count + 1); i++) {
-                        var previoushighestnumber = highestnumber
-                        var highestnumber = Math.max.apply(Math, totalpts_list)
-                        if (previoushighestnumber == highestnumber) {
-                            PlaceNumber += 0
-                        } else {
-                            PlaceNumber += 1
-                        }
-                        var ArrayID = jQuery.inArray(highestnumber, totalpts_list)
-                        var OriginalArrayID = jQuery.inArray(highestnumber, unique_totalpts_list)
-                        var PlaceText = ""
-                        if (PlaceNumber == 1) {
-                            PlaceText = "1st Place  -"
-                        } else if (PlaceNumber == 2) {
-                            PlaceText = "2nd Place  -"
-                        } else if (PlaceNumber == 3) {
-                            PlaceText = "3rd Place  -"
-                        } else {
-                            PlaceText = PlaceNumber.toString() + "th Place  -"
-                        }
-                        if (previoushighestnumber == highestnumber) {
-                            scorelist.splice(OriginalArrayID + duplicateamount, 1, PlaceText + " Total points: " + highestnumber);
-                            totalpts_list.splice(ArrayID, 1)
-                            duplicateamount += 1
-                        } else {
-                            scorelist.splice(OriginalArrayID, 1, PlaceText + " Total points: " + highestnumber);
-                            totalpts_list.splice(ArrayID, 1)
-                        }
-                    }
-
-                    for (i = 0; i < player_count; i++) {
-                        $("#Total_" + (i + 1)).text(scorelist[0])
-                        scorelist.splice(0, 1)
-                    }
-                } else {
-                    $(this).css({ "color": "#ff7070", "font-weight": "normal" });
-                }
+            $('tr').each(function () {
+                var $this = $(this);
+                if ($this.html().replace(/\s|&nbsp;/g, '').length == 0)
+                    $this.remove();
             });
         });
 
@@ -745,11 +630,15 @@
 
 
             if (invalidInputs > 0) {
-                alert('You have invalid players.');
+                $('#btnSaveChanges').html("Invalid players!")
+                setTimeout(function () {
+                    $('#btnSaveChanges').html("Save changes")
+                }, 2000);
             } else {
+                $('#btnSaveChanges').html("Saving...")
                 Player_list_save = []
                 for (x = 1; x < (player_count + 1); x++) {
-                    players = $('.player_input_' + x).map(function () {
+                    var players = $('.player_input_' + x).map(function () {
                         return this.value;
                     }).get();
                     Player_list_save.push(players)
@@ -761,13 +650,30 @@
                     data: { "status": "save", "players_save": Player_list_save, "names": name_list, "player_amount": name_list.length },
                     success: function (result) {
                         if (result == "created") {
-                            alert("Saved")
+                            $('#btnSaveChanges').html("Saved!")
                         } else {
-                            alert("An error occured. Please try again later")
+                            $('#btnSaveChanges').html("An error occured!")
+                            setTimeout(function () {
+                                $('#btnSaveChanges').html("Save changes")
+                            }, 2000);
                         }
                     }
                 });
             }
+        });
+
+        $("#btnHelp").click(function () {
+            $("#help_popup").css({ "display": "block" });
+        });
+
+        $("#close").click(function () {
+            $("#help_popup").fadeOut(200);
+        });
+
+        $('body').click(function (event) {
+            if (event.target.id == "popup_content" || $(event.target).closest('#popup_content').length || event.target.id == "btnHelp")
+                return;
+            $("#help_popup").fadeOut(200);
         });
     </script>
 </body>

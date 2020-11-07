@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title id="title">Hockey Pool</title>
     <link rel="stylesheet" href="css/index.css">
-    <link rel="icon" type="image/icon" href="images/icon.png" id="Icon" />
+    <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
     <script src="https://code.jquery.com/jquery-3.5.1.js"
         integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
@@ -83,8 +83,8 @@
         playerstable = $('#players_table'), player_amount = 2;
 
         $('#btnAddPlayer').click(function () {
-            if (player_amount > 15) {
-                $('.error_message').text('There is a max of 15 players').css("color", "red")
+            if (player_amount > 24) {
+                $('.error_message').text('There is a max of 24 players').css("color", "red")
             } else {
                 $('.error_message').text('')
                 playerstable.each(function () {
@@ -111,51 +111,60 @@
 
         $("#create").click(function () {
             var PlayerList = [];
+            var ValidPlayerName = true
 
-            if ($("#game_id_create").val().length > 6) {
-                $.ajax({
-                    type: "POST",
-                    url: "index.php",
-                    cache: false,
-                    data: { "status": "create_clicked", "game_request": $("#game_id_create").val() },
-                    success: function (result) {
-                        if (result == "true") {
-                            $('.error_message').text('Creating game...').css("color", "green")
-                            for (i = 0; i < player_amount; i++) {
-                                if ($("#player_" + i).val() == "") {
-                                    $("#player_" + i).val("Player " + i);
-                                }
-                                // else if ($("#player_" + i).val().length == 1) {
-                                //     $("#player_" + i).val("Player " + i);
-                                // }
-                                PlayerList.push($("#player_" + i).val());
-                            }
-                            $.ajax({
-                                url: "index.php",
-                                method: "POST",
-                                cache: false,
-                                data: { "status": "create_confirmed", "game_id_create": $("#game_id_create").val(), "players": PlayerList, "player_amount": PlayerList.length },
-                                success: function (created) {
-                                    if (created == "created") {
-                                        window.location.href = 'game.html';
-                                        $('.error_message').text('Game created successfully!').css("color", "green")
-                                    } else {
-                                        $('.error_message').text('An error occured, please try again later').css("color", "red")
-                                    }
-                                }
-                            });
-                        } else if (result == "false") {
-                            $('.error_message').text('This game ID is already used! Pick another one.').css("color", "red")
-                        }
+            if ($("#game_id_create").val().length >= 4) {
+
+                $(".player_name_list").filter(function () {
+                    if ($(this).val().length == 1) {
+                        ValidPlayerName = false
                     }
                 });
+
+                if (ValidPlayerName) {
+                    $.ajax({
+                        type: "POST",
+                        url: "index.php",
+                        cache: false,
+                        data: { "status": "create_clicked", "game_request": $("#game_id_create").val() },
+                        success: function (result) {
+                            if (result == "true") {
+                                $('.error_message').text('Creating game...').css("color", "green")
+                                for (i = 0; i < player_amount; i++) {
+                                    if ($("#player_" + i).val() == "") {
+                                        $("#player_" + i).val("Player " + i);
+                                    }
+                                    PlayerList.push($("#player_" + i).val());
+                                }
+                                $.ajax({
+                                    url: "index.php",
+                                    method: "POST",
+                                    cache: false,
+                                    data: { "status": "create_confirmed", "game_id_create": $("#game_id_create").val(), "players": PlayerList, "player_amount": PlayerList.length },
+                                    success: function (created) {
+                                        if (created == "created") {
+                                            window.location.href = 'game.html';
+                                            $('.error_message').text('Game created successfully!').css("color", "green")
+                                        } else {
+                                            $('.error_message').text('An error occured, please try again later').css("color", "red")
+                                        }
+                                    }
+                                });
+                            } else if (result == "false") {
+                                $('.error_message').text('This game ID is already used! Pick another one.').css("color", "red")
+                            }
+                        }
+                    });
+                } else {
+                    $('.error_message').text("One or more of the players has a name that's too short!").css("color", "red")
+                }
             } else {
-                $('.error_message').text('Pick a game ID longer than 6 characters!').css("color", "red")
+                $('.error_message').text('Pick a game ID longer than 3 characters!').css("color", "red")
             }
         });
 
         $("#load").click(function () {
-            if ($("#game_id_login").val().length > 6) {
+            if ($("#game_id_login").val().length >= 4) {
                 $.ajax({
                     type: "POST",
                     url: "index.php",
@@ -170,7 +179,7 @@
                     }
                 });
             } else {
-                $('.error_message').text('A game ID is at least 6 characters').css("color", "red")
+                $('.error_message').text('A game ID is at least 3 characters').css("color", "red")
             }
         });
     </script>

@@ -9,11 +9,12 @@
         } elseif(isSet($_POST['status']) && $_POST['status'] == 'create_confirmed'){
             $Players = $_POST['players'];
             $player_list = array();
+            $indexname = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' ,'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
             for ($i=1; $i < $_POST['player_amount']; $i++) { 
                 $User = array(
                     $Players[$i] => array()
                 );
-                array_push($player_list, $User);
+                $player_list[$indexname[$i-1]] = $User;
             }
             $game_data = fopen('game_list/'.$_POST['game_id_create'].'.json', 'w');
             fwrite($game_data, json_encode($player_list, JSON_FORCE_OBJECT));
