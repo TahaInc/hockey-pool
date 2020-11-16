@@ -308,11 +308,13 @@
                 }
 
                 var reorder = [];
-                for (var j = 0; j < player_list_order.length; j++) {
+                for (var j = 0; j < player_id_list.length; j++) {
                     reorder.push({ name: player_id_list[j], pts: totalpts_list[j] });
                 }
 
-                reorder.sort(function (a, b) { return b.pts - a.pts });
+                reorder.sort(function (a, b) {
+                    return b.pts - a.pts;
+                });
 
                 for (var k = 0; k < reorder.length; k++) {
                     player_id_list[k] = reorder[k].name;
@@ -338,12 +340,10 @@
                     var subtext = ""
 
                     if (pts_behind == 0) {
-                        subtext = ""
+                        $("#Total_" + player_id_list[i]).html('<p class="place_text" style="color: #fffb7d">' + PlaceText + " Total points: " + totalpts_list[i] + '</p >')
                     } else {
-                        subtext = '<span class="place_subtext">' + pts_behind + ' pts behind ' + firstplace + '</span>'
+                        $("#Total_" + player_id_list[i]).html('<p class="place_text">' + PlaceText + " Total points: " + totalpts_list[i] + '</p ><span class="place_subtext">' + pts_behind + ' pts behind ' + firstplace + '</span>')
                     }
-
-                    $("#Total_" + player_id_list[i]).html('<p class="place_text">' + PlaceText + " Total points: " + totalpts_list[i] + '</p > ' + subtext)
 
                     if (totalpts_list[i + 1] != totalpts_list[i]) {
                         PlaceNumber += 1
