@@ -9,6 +9,8 @@ html {
 	width: 100%;
 	background-color: black;
 	overflow-y: hidden;
+	scrollbar-color: #363795 #1d1d44;
+	scrollbar-width: 5px;
 }
 
 * {
