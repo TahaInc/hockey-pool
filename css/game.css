@@ -44,7 +44,7 @@ input:focus {
 
 input {
 	width: 160px;
-	font-size: 1rem;
+	font-size: 1em;
 	border: 0;
 	background: transparent;
 	font-family: 'CircularBold';
@@ -209,7 +209,7 @@ p {
 	color: #ffffff;
 	cursor: pointer;
 	font-size: 1em;
-	padding: 0.5rem 1rem 0.5rem 1rem;
+	padding: 0.5em 1em 0.5em 1em;
 	border: 0;
 	transition: all 0.5s;
 	border-radius: 6px;
@@ -239,7 +239,7 @@ p {
 	color: #ffffff;
 	cursor: pointer;
 	font-size: 1em;
-	padding: 0.5rem 1rem 0.5rem 1rem;
+	padding: 0.5em 1em 0.5em 1em;
 	border: 0;
 	transition: all 0.5s;
 	border-radius: 6px;
@@ -269,7 +269,7 @@ p {
 	color: #ffffff;
 	cursor: pointer;
 	font-size: 1em;
-	padding: 0.5rem 1rem 0.5rem 1rem;
+	padding: 0.5em 1em 0.5em 1em;
 	border: 0;
 	transition: all 0.5s;
 	border-radius: 6px;
@@ -390,6 +390,7 @@ p {
 	cursor: pointer;
 	font-size: 1.7em;
 	position: fixed;
+	padding: 0;
 	bottom: 4%;
 	right: 3%;
 }

@@ -10,6 +10,8 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
         integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src='https://bundle.run/css-scroll-snap-polyfill@0.1.2'></script>
+
 </head>
 
 <body>
@@ -514,6 +516,76 @@
                             }
                         }
 
+                        mobile = (/iphone|ipod|android|blackberry|iPad|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+                        if (mobile) {
+                            $("th").css("min-width", "100vw");
+                            $(".PlayerName").css("font-size", "4em");
+                            $(".DataInfo").css("padding", "0px 0px 20px 0px");
+                            $("input").css("width", "320px");
+                            $("input").css("font-size", "2em");
+                            $("p").css("margin-left", "8px");
+                            $("p").css("margin-right", "8px");
+                            $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "2em");
+                            $(".name").css("width", "320px");
+                            $(".name").css("margin-left", "90px");
+                            $(".pos, .pts, .gp, .gm").css("width", "60px");
+                            $(".goal").css("text-align", "right");
+                            $(".goal, .assist").css("width", "40px");
+                            $(".team_pic").css("height", "44px");
+                            $(".team_pic").css("width", "44px");
+                            $(".dotstatus").css("height", "16px");
+                            $(".dotstatus").css("width", "16px");
+                            $("#total_table").css("margin-top", "20px");
+                            $("#total_data").css("font-size", "2em");
+                            $("#btnDelPlayer").css("max-width", "270px");
+                            $("#btnAddPlayer").css("max-width", "270px");
+                            $("button").css("flex", "1");
+                            $("#button_holder").css("display", "flex");
+                            $("#button_holder").css("height", "100px");
+                            $("#button_holder").css("width", "90vw");
+                            $("#button_holder").css("font-size", "2em");
+                            $("#button_holder").css("transform", "translate(0%, 0%)");
+                            $("#button_holder").css("left", "1%");
+                            $("#btnHelp").css("font-size", "4em");
+                            $("#btnHelp").css("bottom", "2.5%");
+                            $("#btnHelp").css("right", "2%");
+                            $("#popup_content").css("width", "70%");
+                        } else {
+                            $("th").css("min-width", "500px");
+                            $(".PlayerName").css("font-size", "2em");
+                            $(".DataInfo").css("font-size", "1em");
+                            $(".DataInfo").css("padding", "0px 0px 5px 0px");
+                            $("input").css("width", "160px");
+                            $("input").css("font-size", "1em");
+                            $("p").css("margin-left", "4px");
+                            $("p").css("margin-right", "4px");
+                            $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "1em");
+                            $(".name").css("width", "160px");
+                            $(".name").css("margin-left", "48px");
+                            $(".pos, .pts, .gp, .gm").css("width", "30px");
+                            $(".goal").css("text-align", "center");
+                            $(".goal, .assist").css("width", "20px");
+                            $(".team_pic").css("height", "22px");
+                            $(".team_pic").css("width", "22px");
+                            $(".dotstatus").css("height", "8px");
+                            $(".dotstatus").css("width", "8px");
+                            $("#total_table").css("margin-top", "8px");
+                            $("#total_data").css("font-size", "1em");
+                            $("#btnDelPlayer").css("max-width", "");
+                            $("#btnAddPlayer").css("max-width", "");
+                            $("button").css("flex", "");
+                            $("#button_holder").css("display", "block");
+                            $("#button_holder").css("height", "");
+                            $("#button_holder").css("width", "");
+                            $("#button_holder").css("font-size", "1em");
+                            $("#button_holder").css("transform", "translate(-50%, 0%)");
+                            $("#button_holder").css("left", "50%");
+                            $("#btnHelp").css("font-size", "2em");
+                            $("#btnHelp").css("bottom", "4%");
+                            $("#btnHelp").css("right", "3%");
+                            $("#popup_content").css("width", "50%");
+                        }
+
                         $("#loading").fadeOut(200);
                         $(".hidden").delay(200).fadeIn(300);
                         $(".player_input").autocomplete({
@@ -540,6 +612,78 @@
             });
         }
 
+        $(window).resize(function () {
+            mobile = (/iphone|ipod|android|blackberry|iPad|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+            if (mobile) {
+                $("th").css("min-width", "100vw");
+                $(".PlayerName").css("font-size", "4em");
+                $(".DataInfo").css("padding", "0px 0px 20px 0px");
+                $("input").css("width", "320px");
+                $("input").css("font-size", "2em");
+                $("p").css("margin-left", "8px");
+                $("p").css("margin-right", "8px");
+                $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "2em");
+                $(".name").css("width", "320px");
+                $(".name").css("margin-left", "90px");
+                $(".pos, .pts, .gp, .gm").css("width", "60px");
+                $(".goal").css("text-align", "right");
+                $(".goal, .assist").css("width", "40px");
+                $(".team_pic").css("height", "44px");
+                $(".team_pic").css("width", "44px");
+                $(".dotstatus").css("height", "16px");
+                $(".dotstatus").css("width", "16px");
+                $("#total_table").css("margin-top", "20px");
+                $("#total_data").css("font-size", "2em");
+                $("#btnDelPlayer").css("max-width", "270px");
+                $("#btnAddPlayer").css("max-width", "270px");
+                $("button").css("flex", "1");
+                $("#button_holder").css("display", "flex");
+                $("#button_holder").css("height", "100px");
+                $("#button_holder").css("width", "90vw");
+                $("#button_holder").css("font-size", "2em");
+                $("#button_holder").css("transform", "translate(0%, 0%)");
+                $("#button_holder").css("left", "1%");
+                $("#btnHelp").css("font-size", "4em");
+                $("#btnHelp").css("bottom", "2.5%");
+                $("#btnHelp").css("right", "2%");
+                $("#popup_content").css("width", "70%");
+            } else {
+                $("th").css("min-width", "500px");
+                $(".PlayerName").css("font-size", "2em");
+                $(".DataInfo").css("font-size", "1em");
+                $(".DataInfo").css("padding", "0px 0px 5px 0px");
+                $("input").css("width", "160px");
+                $("input").css("font-size", "1em");
+                $("p").css("margin-left", "4px");
+                $("p").css("margin-right", "4px");
+                $(".name, .pos, .goal, .assist, .pts, .pln, .gp, .gm").css("font-size", "1em");
+                $(".name").css("width", "160px");
+                $(".name").css("margin-left", "48px");
+                $(".pos, .pts, .gp, .gm").css("width", "30px");
+                $(".goal").css("text-align", "center");
+                $(".goal, .assist").css("width", "20px");
+                $(".team_pic").css("height", "22px");
+                $(".team_pic").css("width", "22px");
+                $(".dotstatus").css("height", "8px");
+                $(".dotstatus").css("width", "8px");
+                $("#total_table").css("margin-top", "8px");
+                $("#total_data").css("font-size", "1em");
+                $("#btnDelPlayer").css("max-width", "");
+                $("#btnAddPlayer").css("max-width", "");
+                $("button").css("flex", "");
+                $("#button_holder").css("display", "block");
+                $("#button_holder").css("height", "");
+                $("#button_holder").css("width", "");
+                $("#button_holder").css("font-size", "1em");
+                $("#button_holder").css("transform", "translate(-50%, 0%)");
+                $("#button_holder").css("left", "50%");
+                $("#btnHelp").css("font-size", "2em");
+                $("#btnHelp").css("bottom", "4%");
+                $("#btnHelp").css("right", "3%");
+                $("#popup_content").css("width", "50%");
+            }
+        })
+
         $('#btnAddPlayer').click(function () {
             $('#btnDelPlayer').prop('disabled', false);
             $("#data_info").css({ "opacity": "1" })
@@ -553,6 +697,28 @@
                     $('#Player_' + player_index).each(function () {
                         var element = $(this);
                         element.append('<th><img class="dotstatus" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><img class="team_pic" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><input class="player_input player_input_' + x + " row" + x + "_" + player_index + '" type="text" value=""></input><p class="tooltip pos">-<span class="tooltiptext">Position</span></p><p class="tooltip goal">0<span class="tooltiptext">Goals</span></p><p class="tooltip assist">0<span class="tooltiptext">Assists</span></p><p class="tooltip pts">0<span class="tooltiptext">Points</span></p><p class="tooltip pln">0<span class="tooltiptext">Points last night</span></p><p class="tooltip gp">0<span class="tooltiptext">Game Played</span></p><p class="tooltip gm">0<span class="tooltiptext">Game missed</span></p></th>');
+                        mobile = (/iphone|ipod|android|blackberry|iPad|mini|windows\sce|palm/i.test(navigator.userAgent.toLowerCase()));
+                        if (mobile) {
+                            $("th").css("min-width", "100vw");
+                            $(".PlayerName").css("font-size", "4em");
+                            $(".DataInfo").css("padding", "0px 0px 20px 0px");
+                            $("input").css("width", "320px");
+                            $("input").css("font-size", "2em");
+                            $("p").css("margin-left", "8px");
+                            $("p").css("margin-right", "8px");
+                            $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "2em");
+                            $(".name").css("width", "320px");
+                            $(".name").css("margin-left", "90px");
+                            $(".pos, .pts, .gp, .gm").css("width", "60px");
+                            $(".goal").css("text-align", "right");
+                            $(".goal, .assist").css("width", "40px");
+                            $(".team_pic").css("height", "44px");
+                            $(".team_pic").css("width", "44px");
+                            $(".dotstatus").css("height", "16px");
+                            $(".dotstatus").css("width", "16px");
+                            $("#total_table").css("margin-top", "20px");
+                            $("#total_data").css("font-size", "2em");
+                        }
                     });
                 }
                 player_index += 1
@@ -675,5 +841,14 @@
                 return;
             $("#help_popup").fadeOut(200);
         });
+
+        // $(window).on("scroll", function () { //Change to when 0.5 sec has passed since scrolling
+        //     $("html, body").animate({ scrollTop: "0" }, 500); // snap to nearest table
+        // });
+
+        const init = function () {
+            let items = document.querySelectorAll("section");
+            cssScrollSnapPolyfill();
+        };
     </script>
 </body>
