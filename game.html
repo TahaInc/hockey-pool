@@ -10,7 +10,6 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
         integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src='https://bundle.run/css-scroll-snap-polyfill@0.1.2'></script>
 
 </head>
 
@@ -32,28 +31,17 @@
 
             </tr>
         </table>
-        <div id="help_popup">
+        <div id="rank_popup">
             <div id="popup_content">
                 <div id="popup_header">
                     <span id="close">&times;</span>
-                    <h2 id="help_text">Help</h2>
+                    <h2 id="rank_text">Top unpicked players</h2>
                 </div>
                 <div id="popup_body">
-                    <img class="dothelp" src="assets/greendot.png">
-                    <p class="help_desc">Player will be playing tonight</p>
-                    <br>
-                    <img class="dothelp" src="assets/yellowdot.png">
-                    <p class="help_desc">Player might be playing tonight</p>
-                    <br>
-                    <img class="dothelp" src="assets/reddot.png">
-                    <p class="help_desc">Player has no game tonight</p>
-                    <br>
-                    <img class="dothelp" src="assets/greydot.png">
-                    <p class="help_desc">Player is injured</p>
                 </div>
             </div>
         </div>
-        <button type="button" id="btnHelp">?</button>
+        <button type="button" id="btnRank">≡</button>
         <div id="button_holder">
             <button type="button" id="btnAddPlayer">Add Player</button>
             <button type="button" id="btnDelPlayer">Delete Player</button>
@@ -95,7 +83,7 @@
             GetTeamData()
             GetInjuryData();
             GetScheduleData();
-            GetLastNightData()
+            GetLastNightData();
 
             return $.when(FunctionOne, FunctionTwo, FunctionThree, FunctionFour, FunctionFive).done().promise();
         }
@@ -210,6 +198,31 @@
                     LastNightPlayerAssist.splice(-1, 1);
 
                     FunctionFive.resolve();
+                }
+            });
+        }
+
+        function GetLeagueData() {
+            $.ajax({
+                type: "POST",
+                url: "game.php",
+                data: { "status": "LeagueLeaders" },
+                success: function (result) {
+                    var TopPlayerData = result.split("*")
+                    TopPlayerNames = TopPlayerData[0].split(",")
+                    TopPlayerPts = TopPlayerData[1].split(",")
+
+                    var reorder = [];
+                    for (var j = 0; j < TopPlayerNames.length; j++) {
+                        reorder.push({ name: TopPlayerNames[j], pts: TopPlayerPts[j] });
+                    }
+
+                    reorder.sort(function (a, b) { return b.pts - a.pts });
+
+                    for (var k = 0; k < reorder.length; k++) {
+                        TopPlayerNames[k] = reorder[k].name;
+                        TopPlayerPts[k] = reorder[k].pts;
+                    }
                 }
             });
         }
@@ -359,6 +372,7 @@
         }
 
         $(document).ready(function () {
+            popup_mode = false;
             window.dotsGoingUp = true;
             var dots = window.setInterval(function () {
                 var loading = document.getElementById("loading_dots");
@@ -375,10 +389,12 @@
 
             (function () {
                 function scrollHorizontally(e) {
-                    e = window.event || e;
-                    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-                    document.documentElement.scrollLeft -= (delta * 60);
-                    document.body.scrollLeft -= (delta * 60);
+                    if (popup_mode == false) {
+                        e = window.event || e;
+                        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                        document.documentElement.scrollLeft -= (delta * 60);
+                        document.body.scrollLeft -= (delta * 60);
+                    }
                 }
                 if (window.addEventListener) {
                     window.addEventListener("mousewheel", scrollHorizontally, false);
@@ -455,6 +471,7 @@
                         });
 
                         player_index = 1
+                        picked_players = []
                         for (i = 1; i < (eval("Player_1")).length; i++) {
                             $("#data_info").css({ "opacity": "1" })
                             $("#total_data").css({ "opacity": "1" })
@@ -467,11 +484,14 @@
                                         var element = $(this);
                                         var player_name = (eval("Player_" + x + "[" + player_index + "]")).split("=>")
                                         element.append('<th><img class="dotstatus" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><img class="team_pic" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><input class="player_input player_input_' + x + " row" + x + "_" + i + '" type="text" value="' + player_name[1] + '"></input><p class="tooltip pos">-<span class="tooltiptext">Position</span></p><p class="tooltip goal">0<span class="tooltiptext">Goals</span></p><p class="tooltip assist">0<span class="tooltiptext">Assists</span></p><p class="tooltip pts">0<span class="tooltiptext">Points</span></p><p class="tooltip pln">0<span class="tooltiptext">Points last night</span></p><p class="tooltip gp">0<span class="tooltiptext">Game Played</span></p><p class="tooltip gm">0<span class="tooltiptext">Game missed</span></p></th>');
+                                        picked_players.push(player_name[1])
                                     });
                                 }
                                 player_index += 1
                             });
                         }
+
+                        GetLeagueData();
 
                         for (i = 1; i < (player_count + 1); i++) {
                             player_list_order = []
@@ -523,8 +543,9 @@
                             $(".DataInfo").css("padding", "0px 0px 20px 0px");
                             $("input").css("width", "320px");
                             $("input").css("font-size", "2em");
-                            $("p").css("margin-left", "8px");
-                            $("p").css("margin-right", "8px");
+                            $("p:not(#name_title)").css("margin-left", "8px");
+                            $("p:not(#name_title)").css("margin-right", "8px");
+                            $("#name_title").css("margin-left", "80px");
                             $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "2em");
                             $(".name").css("width", "320px");
                             $(".name").css("margin-left", "90px");
@@ -546,9 +567,9 @@
                             $("#button_holder").css("font-size", "2em");
                             $("#button_holder").css("transform", "translate(0%, 0%)");
                             $("#button_holder").css("left", "1%");
-                            $("#btnHelp").css("font-size", "4em");
-                            $("#btnHelp").css("bottom", "2.5%");
-                            $("#btnHelp").css("right", "2%");
+                            $("#btnRank").css("font-size", "4em");
+                            $("#btnRank").css("bottom", "2.5%");
+                            $("#btnRank").css("right", "2%");
                             $("#popup_content").css("width", "70%");
                         } else {
                             $("th").css("min-width", "500px");
@@ -557,8 +578,9 @@
                             $(".DataInfo").css("padding", "0px 0px 5px 0px");
                             $("input").css("width", "160px");
                             $("input").css("font-size", "1em");
-                            $("p").css("margin-left", "4px");
-                            $("p").css("margin-right", "4px");
+                            $("p:not(#name_title)").css("margin-left", "4px");
+                            $("p:not(#name_title)").css("margin-right", "4px");
+                            $("#name_title").css("margin-left", "76px");
                             $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "1em");
                             $(".name").css("width", "160px");
                             $(".name").css("margin-left", "48px");
@@ -580,14 +602,24 @@
                             $("#button_holder").css("font-size", "1em");
                             $("#button_holder").css("transform", "translate(-50%, 0%)");
                             $("#button_holder").css("left", "50%");
-                            $("#btnHelp").css("font-size", "2em");
-                            $("#btnHelp").css("bottom", "4%");
-                            $("#btnHelp").css("right", "3%");
+                            $("#btnRank").css("font-size", "2em");
+                            $("#btnRank").css("bottom", "3%");
+                            $("#btnRank").css("right", "3%");
                             $("#popup_content").css("width", "50%");
                         }
 
                         $("#loading").fadeOut(200);
                         $(".hidden").delay(200).fadeIn(300);
+
+                        if (localStorage.first_visit != "0") {
+                            localStorage.first_visit = "0";
+                            $("#rank_text").text("Tutorial");
+                            $("#popup_body").empty();
+                            $("#popup_body").css("height", "auto");
+                            $("#popup_body").append('<img class="tutorial_pics" src="assets/Tutorial (1).jpg" /><img class="tutorial_pics" src="assets/Tutorial (2).jpg" />')
+                            $("#rank_popup").css({ "display": "block" });
+                        }
+
                         $(".player_input").autocomplete({
                             source: Player_List
                         });
@@ -620,8 +652,9 @@
                 $(".DataInfo").css("padding", "0px 0px 20px 0px");
                 $("input").css("width", "320px");
                 $("input").css("font-size", "2em");
-                $("p").css("margin-left", "8px");
-                $("p").css("margin-right", "8px");
+                $("p:not(#name_title)").css("margin-left", "8px");
+                $("p:not(#name_title)").css("margin-right", "8px");
+                $("#name_title").css("margin-left", "80px");
                 $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "2em");
                 $(".name").css("width", "320px");
                 $(".name").css("margin-left", "90px");
@@ -643,9 +676,9 @@
                 $("#button_holder").css("font-size", "2em");
                 $("#button_holder").css("transform", "translate(0%, 0%)");
                 $("#button_holder").css("left", "1%");
-                $("#btnHelp").css("font-size", "4em");
-                $("#btnHelp").css("bottom", "2.5%");
-                $("#btnHelp").css("right", "2%");
+                $("#btnRank").css("font-size", "4em");
+                $("#btnRank").css("bottom", "2.5%");
+                $("#btnRank").css("right", "2%");
                 $("#popup_content").css("width", "70%");
             } else {
                 $("th").css("min-width", "500px");
@@ -654,8 +687,9 @@
                 $(".DataInfo").css("padding", "0px 0px 5px 0px");
                 $("input").css("width", "160px");
                 $("input").css("font-size", "1em");
-                $("p").css("margin-left", "4px");
-                $("p").css("margin-right", "4px");
+                $("p:not(#name_title)").css("margin-left", "4px");
+                $("p:not(#name_title)").css("margin-right", "4px");
+                $("#name_title").css("margin-left", "76px");
                 $(".name, .pos, .goal, .assist, .pts, .pln, .gp, .gm").css("font-size", "1em");
                 $(".name").css("width", "160px");
                 $(".name").css("margin-left", "48px");
@@ -677,9 +711,9 @@
                 $("#button_holder").css("font-size", "1em");
                 $("#button_holder").css("transform", "translate(-50%, 0%)");
                 $("#button_holder").css("left", "50%");
-                $("#btnHelp").css("font-size", "2em");
-                $("#btnHelp").css("bottom", "4%");
-                $("#btnHelp").css("right", "3%");
+                $("#btnRank").css("font-size", "2em");
+                $("#btnRank").css("bottom", "3%");
+                $("#btnRank").css("right", "3%");
                 $("#popup_content").css("width", "50%");
             }
         })
@@ -704,8 +738,8 @@
                             $(".DataInfo").css("padding", "0px 0px 20px 0px");
                             $("input").css("width", "320px");
                             $("input").css("font-size", "2em");
-                            $("p").css("margin-left", "8px");
-                            $("p").css("margin-right", "8px");
+                            $("p:not(#name_title)").css("margin-left", "8px");
+                            $("p:not(#name_title)").css("margin-right", "8px");
                             $(".name, .pos, .goal, .assist, .pln, .pts, .gp, .gm").css("font-size", "2em");
                             $(".name").css("width", "320px");
                             $(".name").css("margin-left", "90px");
@@ -828,27 +862,52 @@
             }
         });
 
-        $("#btnHelp").click(function () {
-            $("#help_popup").css({ "display": "block" });
+        $("#btnRank").click(function () {
+            popup_mode = true;
+            $("#rank_text").text("Top unpicked players");
+            $("#popup_body").empty();
+            $("#popup_body").css("height", "70vh");
+            $("#popup_body").append('<table id="top_unpicked"><thead><tr class="tablerow"><th class="tablerow" style="height: 25px;"><p id="name_title" style="text-decoration: underline;" class="top_unpicked_name">NAME</p><p style="text-decoration: underline;" class="top_unpicked_num">POS</p><p style="text-decoration: underline;" class="top_unpicked_num">G</p><p style="text-decoration: underline;" class="top_unpicked_num">A</p><p style="text-decoration: underline;" class="top_unpicked_num">PTS</p><p style="text-decoration: underline;" class="top_unpicked_num">GP</p></th></tr></thead><tbody id="tablebody">');
+
+            pts_list = []
+
+            $(".pts:not(.data)").filter(function () {
+                pts_list.push(parseInt($(this).text().replace("Points", "")))
+            });
+
+            var MinPts = Math.min(...pts_list);
+
+            for (i = 0; i <= TopPlayerNames.length; i++) {
+                if (picked_players.indexOf(TopPlayerNames[i]) == -1) {
+                    var PlayerID = jQuery.inArray(TopPlayerNames[i], Player_List)
+                    var Player_Position = Position_List[PlayerID]
+                    var Player_Team = Team_List[PlayerID]
+                    var Player_GP = GP_List[PlayerID]
+                    var Player_Assists = Assist_List[PlayerID]
+                    var Player_Goals = Goal_List[PlayerID]
+                    var Team_Stats = jQuery.inArray(Player_Team, Team_Stats_List)
+                    var Team_GP = Team_GP_List[Team_Stats]
+                    var Player_GM = parseInt(Team_GP) - parseInt(Player_GP)
+
+                    if ((MinPts <= TopPlayerPts[i]) && (Player_GP >= Player_GM)) {
+                        $("#top_unpicked").append('<tr class="tablerow"><th class="tablerow" style="height: 35px;"><p class="top_unpicked_num">' + (i + 1) + '.</p><img class="team_pic" src="https://content.rotowire.com/images/teamlogo/hockey/100' + Player_Team + '.png" style="height: 22px; width: 22px;"><p class="top_unpicked_name">' + TopPlayerNames[i] + '</p><p class="top_unpicked_num">' + Player_Position + '</p><p class="top_unpicked_num">' + Player_Goals + '</p><p class="top_unpicked_num">' + Player_Assists + '</p><p class="top_unpicked_num">' + TopPlayerPts[i] + '</p><p class="top_unpicked_num">' + Player_GP + '</p></th></tr>')
+                    }
+                }
+            }
+            $("#popup_body").append('</tbody></table>');
+            $("#rank_popup").css({ "display": "block" });
         });
 
         $("#close").click(function () {
-            $("#help_popup").fadeOut(200);
+            popup_mode = false;
+            $("#rank_popup").fadeOut(200);
         });
 
         $('body').click(function (event) {
-            if (event.target.id == "popup_content" || $(event.target).closest('#popup_content').length || event.target.id == "btnHelp")
+            if (event.target.id == "popup_content" || $(event.target).closest('#popup_content').length || event.target.id == "btnRank")
                 return;
-            $("#help_popup").fadeOut(200);
+            $("#rank_popup").fadeOut(200);
+            popup_mode = false;
         });
-
-        // $(window).on("scroll", function () { //Change to when 0.5 sec has passed since scrolling
-        //     $("html, body").animate({ scrollTop: "0" }, 500); // snap to nearest table
-        // });
-
-        const init = function () {
-            let items = document.querySelectorAll("section");
-            cssScrollSnapPolyfill();
-        };
     </script>
 </body>

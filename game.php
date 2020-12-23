@@ -1,4 +1,5 @@
 <?php
+        $year = '2019';
         session_start();
         $game_id = $_SESSION['game_id'];
 
@@ -44,15 +45,22 @@
             fclose($game_data);
             echo "created";
         } elseif (isSet($_POST['status']) && $_POST['status'] == 'PlayerInfo'){
-            $player_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=skater&season=2019');
-            $goalie_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=goalie&season=2019');
+            $player_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=skater&season='.$year);
+            $goalie_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=goalie&season='.$year);
             $PlayerData = (array_merge(json_decode($player_pts, true),json_decode($goalie_pts, true)));
             foreach($PlayerData as $row)
             {
                 foreach($row as $key => $value)
                 {
                     if ($key == "player"){
-                        $PlayerList .= $value.",";
+                        //Surname adjustment
+                        if ($value == "Mitch Marner") {
+                            $PlayerList .= "Mitchell Marner,";
+                        } elseif ($value == "Anthony DeAngelo") {
+                            $PlayerList .= "Tony DeAngelo,";
+                        } else {
+                            $PlayerList .= $value.",";
+                        }
                     } elseif ($key == "points"){
                         $PointsList .= $value.",";
                     } elseif ($key == "goals"){
@@ -80,9 +88,46 @@
                 }
             }
             echo $PlayerList.'*'.$PointsList.'*'.$GoalsList.'*'.$AssistList.'*'.$WinsList.'*'.$SOList.'*'.$OTLList.'*'.$TeamList.'*'.$PositionList.'*'.$GPList;
+        } elseif (isSet($_POST['status']) && $_POST['status'] == 'LeagueLeaders'){
+            $player_league_leaders = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode(file_get_contents('https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&sort=%5B%7B%22property%22:%22points%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22goals%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22assists%22,%22direction%22:%22DESC%22%7D%5D&start=0&limit=100&factCayenneExp=gamesPlayed%3E=1&cayenneExp=gameTypeId=2%20and%20seasonId%3C=20192020%20and%20seasonId%3E=20192020'), true)),RecursiveIteratorIterator::SELF_FIRST);
+            $goalie_league_leaders = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode(file_get_contents('https://api.nhle.com/stats/rest/en/goalie/summary?isAggregate=false&isGame=false&sort=%5B%7B%22property%22:%22wins%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22goals%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22assists%22,%22direction%22:%22DESC%22%7D%5D&start=0&limit=100&factCayenneExp=gamesPlayed%3E=1&cayenneExp=gameTypeId=2%20and%20seasonId%3C=20192020%20and%20seasonId%3E=20192020'), true)),RecursiveIteratorIterator::SELF_FIRST);
+
+            foreach($player_league_leaders as $row)
+            {
+                foreach($row as $key => $value)
+                {
+                    if ($key == null) {
+                    } elseif ($key == "skaterFullName"){
+                        $TopPlayerList .= $value.",";
+                    } elseif ($key == "points"){
+                        $TopPointsList .= $value.",";
+                    }
+                }
+            }
+            foreach($goalie_league_leaders as $row)
+            {
+                foreach($row as $key => $value)
+                {
+                    if ($key == null) {
+                    } elseif ($key == "goalieFullName"){
+                        $TopPlayerList .= $value.",";
+                    } elseif ($key == "points"){
+                        $PointsAmount += $value;
+                    } elseif ($key == "otLosses"){
+                        $PointsAmount += $value;
+                    } elseif ($key == "shutouts"){
+                        $PointsAmount += ($value*3);
+                    } elseif ($key == "wins"){
+                        $PointsAmount += ($value*2);
+                        $TopPointsList .= $PointsAmount.",";
+                        $PointsAmount = 0;
+                    }
+                }
+            }
+            echo $TopPlayerList."*".$TopPointsList;
         } elseif (isSet($_POST['status']) && $_POST['status'] == 'TeamInfo'){
-                    $team_stats = file_get_contents('https://www.rotowire.com/hockey/tables/standings.php?type=league');
-                    $TeamData = json_decode($team_stats, true);
+            $team_stats = file_get_contents('https://www.rotowire.com/hockey/tables/standings.php?type=league');
+            $TeamData = json_decode($team_stats, true);
             foreach($TeamData as $row)
             {
                 foreach($row as $key => $value)
