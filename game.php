@@ -1,5 +1,5 @@
 <?php
-        $year = '2019';
+        $year = '2020';
         session_start();
         $game_id = $_SESSION['game_id'];
 
@@ -143,7 +143,7 @@
         } elseif (isSet($_POST['status']) && $_POST['status'] == 'InjuryInfo'){
             echo file_get_contents('https://www.rotowire.com/hockey/tables/injury-report.php?team=ALL&pos=ALL');
         } elseif (isSet($_POST['status']) && $_POST['status'] == 'ScheduleInfo'){
-            echo file_get_contents('view-source:https://www.rotowire.com/hockey/nhl-lineups.php');
+            echo file_get_contents('https://www.rotowire.com/hockey/nhl-lineups.php');
         } elseif (isSet($_POST['status']) && $_POST['status'] == 'LastNightInfo'){
             $LastNightDate = date('Y-m-d',strtotime("-1 days"));
             $LastNightGames = file_get_contents('https://statsapi.web.nhl.com/api/v1/schedule?date='.$LastNightDate);
