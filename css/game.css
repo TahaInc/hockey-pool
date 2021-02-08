@@ -414,7 +414,7 @@ h2 {
 #tablebody {
 	display: block;
 	overflow-y: scroll;
-	height: 100%;
+	height: calc(70vh - 27px);
 }
 
 #top_unpicked {
