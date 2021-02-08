@@ -321,8 +321,7 @@ h2 {
 	background-color: #fefefe;
 	margin: auto;
 	padding: 0;
-	width: 50%;
-	min-width: 550px;
+	width: 550px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	-webkit-animation-name: animatetop;
 	-webkit-animation-duration: 0.4s;
@@ -419,7 +418,7 @@ h2 {
 }
 
 #top_unpicked {
-	width: 100%;
+	width: 100.1%;
 	height: 100%;
 	border: 0px solid #ccc;
 	border-collapse: collapse;
