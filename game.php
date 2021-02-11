@@ -1,5 +1,5 @@
 <?php
-        $year = '2020';
+        $year = 2020;
         session_start();
         $game_id = $_SESSION['game_id'];
 
@@ -45,8 +45,8 @@
             fclose($game_data);
             echo "created";
         } elseif (isSet($_POST['status']) && $_POST['status'] == 'PlayerInfo'){
-            $player_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=skater&season='.$year);
-            $goalie_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=goalie&season='.$year);
+            $player_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=skater&season='.strval($year));
+            $goalie_pts = file_get_contents('https://www.rotowire.com/hockey/tables/stats.php?pos=goalie&season='.strval($year));
             $PlayerData = (array_merge(json_decode($player_pts, true),json_decode($goalie_pts, true)));
             foreach($PlayerData as $row)
             {
@@ -89,8 +89,8 @@
             }
             echo $PlayerList.'*'.$PointsList.'*'.$GoalsList.'*'.$AssistList.'*'.$WinsList.'*'.$SOList.'*'.$OTLList.'*'.$TeamList.'*'.$PositionList.'*'.$GPList;
         } elseif (isSet($_POST['status']) && $_POST['status'] == 'LeagueLeaders'){
-            $player_league_leaders = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode(file_get_contents('https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&sort=%5B%7B%22property%22:%22points%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22goals%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22assists%22,%22direction%22:%22DESC%22%7D%5D&start=0&limit=100&factCayenneExp=gamesPlayed%3E=1&cayenneExp=gameTypeId=2%20and%20seasonId%3C=20192020%20and%20seasonId%3E=20192020'), true)),RecursiveIteratorIterator::SELF_FIRST);
-            $goalie_league_leaders = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode(file_get_contents('https://api.nhle.com/stats/rest/en/goalie/summary?isAggregate=false&isGame=false&sort=%5B%7B%22property%22:%22wins%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22goals%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22assists%22,%22direction%22:%22DESC%22%7D%5D&start=0&limit=100&factCayenneExp=gamesPlayed%3E=1&cayenneExp=gameTypeId=2%20and%20seasonId%3C=20192020%20and%20seasonId%3E=20192020'), true)),RecursiveIteratorIterator::SELF_FIRST);
+            $player_league_leaders = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode(file_get_contents('https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&sort=%5B%7B%22property%22:%22points%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22goals%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22assists%22,%22direction%22:%22DESC%22%7D%5D&start=0&limit=100&factCayenneExp=gamesPlayed%3E=1&cayenneExp=gameTypeId=2%20and%20seasonId%3C='.strval($year).strval($year+1).'%20and%20seasonId%3E='.strval($year).strval($year+1)), true)),RecursiveIteratorIterator::SELF_FIRST);
+            $goalie_league_leaders = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode(file_get_contents('https://api.nhle.com/stats/rest/en/goalie/summary?isAggregate=false&isGame=false&sort=%5B%7B%22property%22:%22wins%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22goals%22,%22direction%22:%22DESC%22%7D,%7B%22property%22:%22assists%22,%22direction%22:%22DESC%22%7D%5D&start=0&limit=100&factCayenneExp=gamesPlayed%3E=1&cayenneExp=gameTypeId=2%20and%20seasonId%3C='.strval($year).strval($year+1).'%20and%20seasonId%3E='.strval($year).strval($year+1)), true)),RecursiveIteratorIterator::SELF_FIRST);
 
             foreach($player_league_leaders as $row)
             {
