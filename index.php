@@ -1,7 +1,8 @@
 <?php
     session_start();
     if (isSet($_POST['status']) && $_POST['status'] == 'create_clicked') {
-        if (file_exists('game_list/'.$_POST['game_request'].'.json')) {
+        $game_id = filter_var($_POST['game_request'], FILTER_SANITIZE_STRING);
+        if (file_exists('game_list/'.$game_id.'.json')) {
             echo "false";
         } else {
             echo "true";
@@ -16,14 +17,16 @@
             );
             $player_list[$indexname[$i-1]] = $User;
         }
-        $game_data = fopen('game_list/'.$_POST['game_id_create'].'.json', 'w');
+        $game_id = filter_var($_POST['game_id_create'], FILTER_SANITIZE_STRING);
+        $game_data = fopen('game_list/'.$game_id.'.json', 'w');
         fwrite($game_data, json_encode($player_list, JSON_FORCE_OBJECT));
         fclose($game_data);
-        $_SESSION['game_id'] = $_POST['game_id_create'];
+        $_SESSION['game_id'] = $game_id;
         echo "created";
     } elseif (isSet($_POST['status']) && $_POST['status'] == 'load_clicked') {
-        if (file_exists('game_list/'.$_POST['game_id_login'].'.json')) {
-            $_SESSION['game_id'] = $_POST['game_id_login'];
+        $game_id = filter_var($_POST['game_id_login'], FILTER_SANITIZE_STRING);
+        if (file_exists('game_list/'.$game_id.'.json')) {
+            $_SESSION['game_id'] = $game_id;
             echo "true";
         } else {
             echo "false";
