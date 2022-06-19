@@ -8,8 +8,8 @@
 
 <br />
 
-**Create games with up to 24 friends** ![new game](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image1.jpg?raw=true)
+**Create games with up to 24 friends** ![new game](https://github.com/TahaInc/Hockey-Pool/blob/main/images/screenshot_1.jpg?raw=true)
 
-**Your picks are saved in the cloud, where you can access them anytime** ![load game](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image2.jpg?raw=true)
+**Your picks are saved in the cloud, where you can access them anytime** ![load game](https://github.com/TahaInc/Hockey-Pool/blob/main/images/screenshot_2.jpg?raw=true)
 
-**See all your stats and how you compare to your friends** ![see stats](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image3.jpg?raw=true)
+**See all your stats and how you compare to your friends** ![see stats](https://github.com/TahaInc/Hockey-Pool/blob/main/images/screenshot_3.jpg?raw=true)
