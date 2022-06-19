@@ -1,12 +1,15 @@
 # Hockey Pool
-A website to create and organize a fantasy pool for the NHL. Pick players, and see live stats of how your team is performing against your friends. Website is available [here](https://www.taharhidouani.com/projects/hockeypool/).
 
-#### You can create a game with up to 24 friends and pick a custom game code.
-![Image 1](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image1.jpg?raw=true)
+### Main features:
 
-#### Or you can load a previously created game.
-![Image 2](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image2.jpg?raw=true)
+- Create games with up to 24 friends and pick custom game codes
+- Pick up to 16 players for your fantasy team
+- Watch your stats update automatically, event showing you if your players are injured or playing tonight
 
-#### Then pick up to 16 players, and the stats will update automatically. It will even let you know if that player is injured or playing tonight.
-![Image 3](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image3.jpg?raw=true)
+<br />
 
+**Create games with up to 24 friends** ![new game](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image1.jpg?raw=true)
+
+**Your picks are saved in the cloud, where you can access them anytime** ![load game](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image2.jpg?raw=true)
+
+**See all your stats and how you compare to your friends** ![see stats](https://github.com/TahaInc/Hockey-Pool/blob/main/Screenshots/image3.jpg?raw=true)
